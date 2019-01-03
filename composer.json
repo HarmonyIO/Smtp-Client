@@ -13,7 +13,9 @@
     "prefer-stable": true,
     "require": {
         "php": "^7.3",
-        "amphp/amp": "^2.1.1"
+        "amphp/amp": "^2.1.1",
+        "amphp/socket": "^0.10.11",
+        "myclabs/php-enum": "^1.6.4"
     },
     "require-dev": {
         "harmonyio/php-codesniffer-ruleset": "1.0.0-rc1",
