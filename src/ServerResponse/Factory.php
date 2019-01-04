@@ -2,6 +2,8 @@
 
 namespace HarmonyIO\SmtpClient\ServerResponse;
 
+use HarmonyIO\SmtpClient\ServerResponse\Connect\InvalidCommand;
+use HarmonyIO\SmtpClient\ServerResponse\Connect\ServiceReady;
 use HarmonyIO\SmtpClient\TransactionStatus;
 
 class Factory
@@ -14,6 +16,9 @@ class Factory
         $this->availableCommands = [
             TransactionStatus::CONNECT()->getValue() => [
                 ServiceReady::class,
+            ],
+            TransactionStatus::SENT_EHLO()->getValue() => [
+                InvalidCommand::class,
             ],
         ];
     }

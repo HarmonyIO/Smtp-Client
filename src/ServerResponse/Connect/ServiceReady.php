@@ -1,6 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace HarmonyIO\SmtpClient\ServerResponse;
+namespace HarmonyIO\SmtpClient\ServerResponse\Connect;
+
+use HarmonyIO\SmtpClient\ServerResponse\Response;
 
 class ServiceReady implements Response
 {

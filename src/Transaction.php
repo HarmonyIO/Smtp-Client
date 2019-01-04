@@ -3,9 +3,11 @@
 namespace HarmonyIO\SmtpClient;
 
 use HarmonyIO\SmtpClient\Command\Ehlo;
+use HarmonyIO\SmtpClient\Command\Helo;
 use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\ServerResponse\Connect\InvalidCommand;
+use HarmonyIO\SmtpClient\ServerResponse\Connect\ServiceReady;
 use HarmonyIO\SmtpClient\ServerResponse\Factory as ServerResponseFactory;
-use HarmonyIO\SmtpClient\ServerResponse\ServiceReady;
 
 class Transaction
 {
@@ -49,13 +51,24 @@ class Transaction
             case ServiceReady::class:
                 $this->processServiceAvailability();
                 return;
+
+            case InvalidCommand::class:
+                $this->processEhloNotSupported();
+                return;
         }
     }
 
     private function processServiceAvailability(): void
     {
-        $this->status = TransactionStatus::SEND_EHLO();
+        $this->status = TransactionStatus::SENT_EHLO();
 
         $this->socket->write((string) new Ehlo('foo.bar'));
+    }
+
+    private function processEhloNotSupported(): void
+    {
+        $this->status = TransactionStatus::SENT_HELO();
+
+        $this->socket->write((string) new Helo('foo.bar'));
     }
 }
