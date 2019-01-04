@@ -2,8 +2,10 @@
 
 namespace HarmonyIO\SmtpClient\Command;
 
-class Ehlo
+class Ehlo extends Command
 {
-
+    public function __construct(string $identifier)
+    {
+        parent::__construct('EHLO', $identifier);
+    }
 }
-

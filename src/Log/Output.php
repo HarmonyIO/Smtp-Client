@@ -4,6 +4,7 @@ namespace HarmonyIO\SmtpClient\Log;
 
 class Output
 {
+    /** @var string[] */
     private $textualLevels = [
         Level::INFO       => 'INFO',
         Level::MESSAGE_IN => 'INCOMING',
@@ -12,6 +13,7 @@ class Output
         Level::DEBUG      => 'DEBUG',
     ];
 
+    /** @var Level */
     private $logLevel;
 
     public function __construct(Level $level)
@@ -19,45 +21,63 @@ class Output
         $this->logLevel = $level;
     }
 
+    /**
+     * @param mixed[] $context
+     */
     public function info(string $message, array $context = []): void
     {
         $this->log(new Level(Level::INFO), $message, $context);
     }
 
+    /**
+     * @param mixed[] $context
+     */
     public function messageIn(string $message, array $context = []): void
     {
         $this->log(new Level(Level::MESSAGE_IN), $message, $context);
     }
 
+    /**
+     * @param mixed[] $context
+     */
     public function smtpIn(string $message, array $context = []): void
     {
         $this->log(new Level(Level::SMTP_IN), $message, $context);
     }
 
+    /**
+     * @param mixed[] $context
+     */
     public function smtpOut(string $message, array $context = []): void
     {
         $this->log(new Level(Level::SMTP_OUT), $message, $context);
     }
 
+    /**
+     * @param mixed[] $context
+     */
     public function debug(string $message, array $context = []): void
     {
         $this->log(new Level(Level::DEBUG), $message, $context);
     }
 
-    public function log(Level $level, string $message, array $context = [])
+    /**
+     * @param mixed[] $context
+     */
+    public function log(Level $level, string $message, array $context = []): void
     {
         if (!$this->meetsLogLevel($level)) {
             return;
         }
 
         echo sprintf(
-                '%s [%s] %s',
-                (new \DateTime())->format('Y-m-d H:i:s'),
-                $this->textualLevels[$level->getValue()],
-                $this->replaceNonPrintableCharacters($message)
-            ) . PHP_EOL;
+            '%s [%s] %s',
+            (new \DateTime())->format('Y-m-d H:i:s'),
+            $this->textualLevels[$level->getValue()],
+            $this->replaceNonPrintableCharacters($message)
+        ) . PHP_EOL;
 
-        if (empty($context)) {
+        if (!$context) {
             return;
         }
 
