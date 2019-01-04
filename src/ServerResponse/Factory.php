@@ -2,8 +2,9 @@
 
 namespace HarmonyIO\SmtpClient\ServerResponse;
 
-use HarmonyIO\SmtpClient\ServerResponse\Connect\InvalidCommand;
 use HarmonyIO\SmtpClient\ServerResponse\Connect\ServiceReady;
+use HarmonyIO\SmtpClient\ServerResponse\SentEhlo\DeliveryStatusNotification;
+use HarmonyIO\SmtpClient\ServerResponse\SentEhlo\InvalidCommand;
 use HarmonyIO\SmtpClient\TransactionStatus;
 
 class Factory
@@ -19,6 +20,7 @@ class Factory
             ],
             TransactionStatus::SENT_EHLO()->getValue() => [
                 InvalidCommand::class,
+                DeliveryStatusNotification::class,
             ],
         ];
     }

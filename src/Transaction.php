@@ -5,9 +5,12 @@ namespace HarmonyIO\SmtpClient;
 use HarmonyIO\SmtpClient\Command\Ehlo;
 use HarmonyIO\SmtpClient\Command\Helo;
 use HarmonyIO\SmtpClient\Log\Output;
-use HarmonyIO\SmtpClient\ServerResponse\Connect\InvalidCommand;
+use HarmonyIO\SmtpClient\ServerCapabilities\Collection;
 use HarmonyIO\SmtpClient\ServerResponse\Connect\ServiceReady;
 use HarmonyIO\SmtpClient\ServerResponse\Factory as ServerResponseFactory;
+use HarmonyIO\SmtpClient\ServerResponse\SentEhlo\DeliveryStatusNotification;
+use HarmonyIO\SmtpClient\ServerResponse\SentEhlo\EhloResponse;
+use HarmonyIO\SmtpClient\ServerResponse\SentEhlo\InvalidCommand;
 
 class Transaction
 {
@@ -23,13 +26,17 @@ class Transaction
     /** @var TransactionStatus */
     private $status;
 
+    /** @var Collection */
+    private $smtpCapabilities;
+
     public function __construct(Output $logger, Socket $socket, ServerResponseFactory $serverResponseFactory)
     {
         $this->logger                = $logger;
         $this->socket                = $socket;
         $this->serverResponseFactory = $serverResponseFactory;
 
-        $this->status = TransactionStatus::CONNECT();
+        $this->status           = TransactionStatus::CONNECT();
+        $this->smtpCapabilities = new Collection();
     }
 
     public function processLine(string $line): void
@@ -52,8 +59,17 @@ class Transaction
                 $this->processServiceAvailability();
                 return;
 
+            case EhloResponse::class:
+                $this->processEhloSupported();
+                return;
+
             case InvalidCommand::class:
                 $this->processEhloNotSupported();
+                return;
+
+            case DeliveryStatusNotification::class:
+                /** @var DeliveryStatusNotification $serverResponse */
+                $this->processDsnCapability($serverResponse);
                 return;
         }
     }
@@ -65,10 +81,24 @@ class Transaction
         $this->socket->write((string) new Ehlo('foo.bar'));
     }
 
+    private function processEhloSupported(): void
+    {
+        $this->status = TransactionStatus::PROCESSING_EHLO();
+    }
+
     private function processEhloNotSupported(): void
     {
         $this->status = TransactionStatus::SENT_HELO();
 
         $this->socket->write((string) new Helo('foo.bar'));
+    }
+
+    private function processDsnCapability(DeliveryStatusNotification $dsnCapability): void
+    {
+        $this->smtpCapabilities->addCapability($dsnCapability);
+
+        if (!$dsnCapability->isLastResponse()) {
+            return;
+        }
     }
 }

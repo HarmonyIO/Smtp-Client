@@ -2,9 +2,9 @@
 
 namespace HarmonyIO\SmtpClient\ServerResponse\Connect;
 
-use HarmonyIO\SmtpClient\ServerResponse\Response;
+use HarmonyIO\SmtpClient\ServerResponse\BaseResponse;
 
-class ServiceReady implements Response
+class ServiceReady extends BaseResponse
 {
     private const PATTERN = '/^220 (?P<domain>[^ ]*)(:? (?P<serviceName>[^ ]*) ready)$/';
 
@@ -25,6 +25,8 @@ class ServiceReady implements Response
 
         $this->domain      = $matches['domain'];
         $this->serviceName = $matches['serviceName'];
+
+        parent::__construct($line);
     }
 
     public function getDomain(): string
