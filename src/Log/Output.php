@@ -5,19 +5,21 @@ namespace HarmonyIO\SmtpClient\Log;
 class Output
 {
     /** @var string[] */
-    private $textualLevels = [
-        Level::INFO       => 'INFO',
-        Level::MESSAGE_IN => 'INCOMING',
-        Level::SMTP_IN    => 'SMTP_IN',
-        Level::SMTP_OUT   => 'SMTP_OUT',
-        Level::DEBUG      => 'DEBUG',
-    ];
+    private $textualLevels = [];
 
     /** @var Level */
     private $logLevel;
 
     public function __construct(Level $level)
     {
+        $this->textualLevels = [
+            Level::INFO()->getValue()       => 'INFO',
+            Level::MESSAGE_IN()->getValue() => 'INCOMING',
+            Level::SMTP_IN()->getValue()    => 'SMTP_IN',
+            Level::SMTP_OUT()->getValue()   => 'SMTP_OUT',
+            Level::DEBUG()->getValue()      => 'DEBUG',
+        ];
+
         $this->logLevel = $level;
     }
 
@@ -26,7 +28,7 @@ class Output
      */
     public function info(string $message, array $context = []): void
     {
-        $this->log(new Level(Level::INFO), $message, $context);
+        $this->log(Level::INFO(), $message, $context);
     }
 
     /**
@@ -34,7 +36,7 @@ class Output
      */
     public function messageIn(string $message, array $context = []): void
     {
-        $this->log(new Level(Level::MESSAGE_IN), $message, $context);
+        $this->log(Level::MESSAGE_IN(), $message, $context);
     }
 
     /**
@@ -42,7 +44,7 @@ class Output
      */
     public function smtpIn(string $message, array $context = []): void
     {
-        $this->log(new Level(Level::SMTP_IN), $message, $context);
+        $this->log(Level::SMTP_IN(), $message, $context);
     }
 
     /**
@@ -50,7 +52,7 @@ class Output
      */
     public function smtpOut(string $message, array $context = []): void
     {
-        $this->log(new Level(Level::SMTP_OUT), $message, $context);
+        $this->log(Level::SMTP_OUT(), $message, $context);
     }
 
     /**
@@ -58,7 +60,7 @@ class Output
      */
     public function debug(string $message, array $context = []): void
     {
-        $this->log(new Level(Level::DEBUG), $message, $context);
+        $this->log(Level::DEBUG(), $message, $context);
     }
 
     /**
