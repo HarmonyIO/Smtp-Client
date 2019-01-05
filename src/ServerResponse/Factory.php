@@ -39,6 +39,10 @@ class Factory
                 // must always be the last in the list
                 UnsupportedExtension::class,
             ],
+            TransactionStatus::STARTED_PLAIN_AUTH()->getValue() => [
+                InvalidCredentials::class,
+                AcceptedCredentials::class,
+            ],
             TransactionStatus::STARTED_LOGIN_AUTH()->getValue() => [
                 Username::class,
                 Password::class,
