@@ -2,9 +2,14 @@
 
 namespace HarmonyIO\SmtpClient;
 
+use HarmonyIO\SmtpClient\Command\Auth\LogInPassword;
+use HarmonyIO\SmtpClient\Command\Auth\LogInUsername;
 use HarmonyIO\SmtpClient\Command\Auth\Plain;
+use HarmonyIO\SmtpClient\Command\Auth\StartLogIn;
 use HarmonyIO\SmtpClient\Command\Ehlo;
 use HarmonyIO\SmtpClient\Command\Helo;
+use HarmonyIO\SmtpClient\Command\Quit;
+use HarmonyIO\SmtpClient\Exception\InvalidCredentials as InvalidCredentialsException;
 use HarmonyIO\SmtpClient\Log\Output;
 use HarmonyIO\SmtpClient\ServerCapabilities\Collection;
 use HarmonyIO\SmtpClient\ServerResponse\Connect\ServiceReady;
@@ -16,6 +21,10 @@ use HarmonyIO\SmtpClient\ServerResponse\ProcessingEhlo\UnsupportedExtension;
 use HarmonyIO\SmtpClient\ServerResponse\Response;
 use HarmonyIO\SmtpClient\ServerResponse\SentEhlo\EhloResponse;
 use HarmonyIO\SmtpClient\ServerResponse\SentEhlo\InvalidCommand;
+use HarmonyIO\SmtpClient\ServerResponse\StartedLogInAuth\AcceptedCredentials;
+use HarmonyIO\SmtpClient\ServerResponse\StartedLogInAuth\InvalidCredentials;
+use HarmonyIO\SmtpClient\ServerResponse\StartedLogInAuth\Password;
+use HarmonyIO\SmtpClient\ServerResponse\StartedLogInAuth\Username;
 
 class Transaction
 {
@@ -99,6 +108,22 @@ class Transaction
             case UnsupportedExtension::class:
                 $this->processUnsupportedCapability($serverResponse);
                 return;
+
+            case Username::class:
+                $this->processLogInUsername();
+                return;
+
+            case Password::class:
+                $this->processLogInPassword();
+                return;
+
+            case InvalidCredentials::class:
+                $this->processInvalidLogInCredentials();
+                return;
+
+            case AcceptedCredentials::class:
+                $this->processValidLogInCredentials();
+                return;
         }
     }
 
@@ -175,6 +200,10 @@ class Transaction
             case 'PLAIN':
                 $this->startPlainAuthentication();
                 return;
+
+            case 'LOGIN':
+                $this->startLogInAuthentication();
+                return;
         }
 
         $this->status = TransactionStatus::SENT_HELO();
@@ -185,5 +214,35 @@ class Transaction
         $this->status = TransactionStatus::STARTED_PLAIN_AUTH();
 
         $this->socket->write((string) new Plain($this->authentication));
+    }
+
+    private function startLogInAuthentication(): void
+    {
+        $this->status = TransactionStatus::STARTED_LOGIN_AUTH();
+
+        $this->socket->write((string) new StartLogIn());
+    }
+
+    private function processLogInUsername(): void
+    {
+        $this->socket->write((string) new LogInUsername($this->authentication));
+    }
+
+    private function processLogInPassword(): void
+    {
+        $this->socket->write((string) new LogInPassword($this->authentication));
+    }
+
+    private function processInvalidLogInCredentials(): void
+    {
+        $this->socket->write((string) new Quit());
+
+        throw new InvalidCredentialsException();
+    }
+
+    private function processValidLogInCredentials(): void
+    {
+        var_dump('ACCEPTED CREDENTIALS \o/');
+        // continue smtp flow
     }
 }

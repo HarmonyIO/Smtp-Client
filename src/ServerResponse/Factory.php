@@ -10,6 +10,10 @@ use HarmonyIO\SmtpClient\ServerResponse\ProcessingEhlo\Pipelining;
 use HarmonyIO\SmtpClient\ServerResponse\ProcessingEhlo\UnsupportedExtension;
 use HarmonyIO\SmtpClient\ServerResponse\SentEhlo\EhloResponse;
 use HarmonyIO\SmtpClient\ServerResponse\SentEhlo\InvalidCommand;
+use HarmonyIO\SmtpClient\ServerResponse\StartedLogInAuth\AcceptedCredentials;
+use HarmonyIO\SmtpClient\ServerResponse\StartedLogInAuth\InvalidCredentials;
+use HarmonyIO\SmtpClient\ServerResponse\StartedLogInAuth\Password;
+use HarmonyIO\SmtpClient\ServerResponse\StartedLogInAuth\Username;
 use HarmonyIO\SmtpClient\TransactionStatus;
 
 class Factory
@@ -34,6 +38,12 @@ class Factory
                 Authentication::class,
                 // must always be the last in the list
                 UnsupportedExtension::class,
+            ],
+            TransactionStatus::STARTED_LOGIN_AUTH()->getValue() => [
+                Username::class,
+                Password::class,
+                InvalidCredentials::class,
+                AcceptedCredentials::class,
             ],
         ];
     }

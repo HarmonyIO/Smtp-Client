@@ -10,6 +10,7 @@ use MyCLabs\Enum\Enum;
  * @method static TransactionStatus PROCESSING_EHLO()
  * @method static TransactionStatus SENT_HELO()
  * @method static TransactionStatus STARTED_PLAIN_AUTH()
+ * @method static TransactionStatus STARTED_LOGIN_AUTH()
  */
 class TransactionStatus extends Enum
 {
@@ -19,5 +20,6 @@ class TransactionStatus extends Enum
     private const PROCESSING_EHLO    = 3;
     private const SENT_HELO          = 4;
     private const STARTED_PLAIN_AUTH = 5;
+    private const STARTED_LOGIN_AUTH = 5;
     // phpcs:enable SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedConstant
 }
