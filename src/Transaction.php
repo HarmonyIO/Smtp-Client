@@ -285,6 +285,5 @@ class Transaction
 
     private function processAcceptedMailFrom(): void
     {
-
     }
 }
