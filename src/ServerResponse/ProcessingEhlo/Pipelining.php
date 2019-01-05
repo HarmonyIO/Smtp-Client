@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace HarmonyIO\SmtpClient\ServerResponse\SentEhlo;
+namespace HarmonyIO\SmtpClient\ServerResponse\ProcessingEhlo;
 
 use HarmonyIO\SmtpClient\ServerResponse\BaseResponse;
 
-class DeliveryStatusNotification extends BaseResponse
+class Pipelining extends BaseResponse
 {
-    private const PATTERN = '/^250[\- ]DSN$/';
+    private const PATTERN = '~^250[- ]PIPELINING$~';
 
     public static function isValid(string $line): bool
     {

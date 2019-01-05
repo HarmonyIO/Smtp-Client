@@ -3,7 +3,12 @@
 namespace HarmonyIO\SmtpClient\ServerResponse;
 
 use HarmonyIO\SmtpClient\ServerResponse\Connect\ServiceReady;
-use HarmonyIO\SmtpClient\ServerResponse\SentEhlo\DeliveryStatusNotification;
+use HarmonyIO\SmtpClient\ServerResponse\ProcessingEhlo\Authentication;
+use HarmonyIO\SmtpClient\ServerResponse\ProcessingEhlo\DeliveryStatusNotification;
+use HarmonyIO\SmtpClient\ServerResponse\ProcessingEhlo\MessageSizeDeclaration;
+use HarmonyIO\SmtpClient\ServerResponse\ProcessingEhlo\Pipelining;
+use HarmonyIO\SmtpClient\ServerResponse\ProcessingEhlo\UnsupportedExtension;
+use HarmonyIO\SmtpClient\ServerResponse\SentEhlo\EhloResponse;
 use HarmonyIO\SmtpClient\ServerResponse\SentEhlo\InvalidCommand;
 use HarmonyIO\SmtpClient\TransactionStatus;
 
@@ -20,7 +25,15 @@ class Factory
             ],
             TransactionStatus::SENT_EHLO()->getValue() => [
                 InvalidCommand::class,
+                EhloResponse::class,
+            ],
+            TransactionStatus::PROCESSING_EHLO()->getValue() => [
                 DeliveryStatusNotification::class,
+                MessageSizeDeclaration::class,
+                Pipelining::class,
+                Authentication::class,
+                // must always be the last in the list
+                UnsupportedExtension::class,
             ],
         ];
     }

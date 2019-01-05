@@ -21,10 +21,14 @@ class Connection
     /** @var Output */
     private $logger;
 
-    public function __construct(ServerAddress $serverAddress, Output $logger)
+    /** @var Authentication|null */
+    private $authentication;
+
+    public function __construct(ServerAddress $serverAddress, Output $logger, ?Authentication $authentication = null)
     {
-        $this->serverAddress = $serverAddress;
-        $this->logger        = $logger;
+        $this->serverAddress  = $serverAddress;
+        $this->logger         = $logger;
+        $this->authentication = $authentication;
     }
 
     public function connect(): Promise
@@ -40,7 +44,7 @@ class Connection
             );
 
             $socket = new Socket($this->logger, $socket);
-            $transaction = new Transaction($this->logger, $socket, new ServerResponseFactory());
+            $transaction = new Transaction($this->logger, $socket, new ServerResponseFactory(), $this->authentication);
 
             $buffer = '';
             // phpcs:ignore SlevomatCodingStandard.ControlStructures.DisallowYodaComparison.DisallowedYodaComparison

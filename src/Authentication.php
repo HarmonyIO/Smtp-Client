@@ -2,6 +2,8 @@
 
 namespace HarmonyIO\SmtpClient;
 
+use HarmonyIO\SmtpClient\Exception\NulByte;
+
 class Authentication
 {
     /** @var string */
@@ -12,6 +14,14 @@ class Authentication
 
     public function __construct(string $username, string $password)
     {
+        if (strpos($username, "\0") !== false) {
+            throw new NulByte();
+        }
+
+        if (strpos($password, "\0") !== false) {
+            throw new NulByte();
+        }
+
         $this->username = $username;
         $this->password = $password;
     }

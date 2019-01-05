@@ -16,4 +16,13 @@ class Collection
     {
         return isset($this->capabilities[$fullyQualifiedCapabilityName]);
     }
+
+    public function getCapability(string $fullyQualifiedCapabilityName): ?object
+    {
+        if (!$this>$this->isCapableOf($fullyQualifiedCapabilityName)) {
+            return null;
+        }
+
+        return $this->capabilities[$fullyQualifiedCapabilityName];
+    }
 }

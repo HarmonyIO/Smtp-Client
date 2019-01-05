@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace HarmonyIO\SmtpClient\ServerResponse\SentEhlo;
+namespace HarmonyIO\SmtpClient\ServerResponse\ProcessingEhlo;
 
 use HarmonyIO\SmtpClient\ServerResponse\BaseResponse;
 
-class EhloResponse extends BaseResponse
+class MessageSizeDeclaration extends BaseResponse
 {
-    private const PATTERN = '/^250(?:[- ](?P<domain>.*))?$/';
+    private const PATTERN = '~^250[- ]SIZE (?P<size>\d+)$~';
 
-    /** @var string|null */
-    private $domain;
+    /** @var int */
+    private $sizeInBytes;
 
     public static function isValid(string $line): bool
     {
@@ -20,15 +20,13 @@ class EhloResponse extends BaseResponse
     {
         preg_match(self::PATTERN, $line, $matches);
 
-        if (isset($matches['domain'])) {
-            $this->domain = $matches['domain'];
-        }
+        $this->sizeInBytes = (int) $matches['size'];
 
         parent::__construct($line);
     }
 
-    public function getDomain(): ?string
+    public function getSize(): int
     {
-        return $this->domain;
+        return $this->sizeInBytes;
     }
 }
