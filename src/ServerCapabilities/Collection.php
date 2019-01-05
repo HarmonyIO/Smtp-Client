@@ -19,7 +19,7 @@ class Collection
 
     public function getCapability(string $fullyQualifiedCapabilityName): ?object
     {
-        if (!$this>$this->isCapableOf($fullyQualifiedCapabilityName)) {
+        if (!$this->isCapableOf($fullyQualifiedCapabilityName)) {
             return null;
         }
 
