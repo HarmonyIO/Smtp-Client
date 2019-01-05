@@ -7,3 +7,38 @@
 [![License](https://poser.pugx.org/harmonyio/smtp-client/license)](https://packagist.org/packages/harmonyio/smtp-client)
 
 Async SMTP client
+
+Requirements
+
+- PHP 7.3
+  - ext-hash
+  - ext-json
+
+In addition for non-blocking contexts one of the following event libraries should be installed:
+
+- [ev](https://pecl.php.net/package/ev)
+- [event](https://pecl.php.net/package/event)
+- [php-uv](https://github.com/bwoebi/php-uv)
+
+## Installation
+
+```
+composer require harmonyio/smtp-client
+```
+
+## Implementation
+
+### Authentication
+
+The following authentication methods are currently implemented:
+
+- `PLAIN`
+- `LOGIN`
+- `CRAM-MD5`
+
+### SMTP Extensions
+
+The following SMTP extensions are currently implemented:
+
+- Authentication (`AUTH`)
+- MessageSizeDeclaration (`SIZE`)

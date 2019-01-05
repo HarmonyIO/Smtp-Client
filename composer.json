@@ -13,6 +13,7 @@
     "prefer-stable": true,
     "require": {
         "php": "^7.3",
+        "ext-hash": "*",
         "ext-json": "*",
         "amphp/amp": "^2.1.1",
         "amphp/socket": "^0.10.11",
