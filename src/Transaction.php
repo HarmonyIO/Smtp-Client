@@ -2,9 +2,11 @@
 
 namespace HarmonyIO\SmtpClient;
 
+use HarmonyIO\SmtpClient\Command\Auth\CramMd5Response;
 use HarmonyIO\SmtpClient\Command\Auth\LogInPassword;
 use HarmonyIO\SmtpClient\Command\Auth\LogInUsername;
 use HarmonyIO\SmtpClient\Command\Auth\Plain;
+use HarmonyIO\SmtpClient\Command\Auth\StartCramMd5;
 use HarmonyIO\SmtpClient\Command\Auth\StartLogIn;
 use HarmonyIO\SmtpClient\Command\Ehlo;
 use HarmonyIO\SmtpClient\Command\Helo;
@@ -21,6 +23,7 @@ use HarmonyIO\SmtpClient\ServerResponse\ProcessingEhlo\UnsupportedExtension;
 use HarmonyIO\SmtpClient\ServerResponse\Response;
 use HarmonyIO\SmtpClient\ServerResponse\SentEhlo\EhloResponse;
 use HarmonyIO\SmtpClient\ServerResponse\SentEhlo\InvalidCommand;
+use HarmonyIO\SmtpClient\ServerResponse\StartedCramMd5Auth\Challenge;
 use HarmonyIO\SmtpClient\ServerResponse\StartedLogInAuth\AcceptedCredentials;
 use HarmonyIO\SmtpClient\ServerResponse\StartedLogInAuth\InvalidCredentials;
 use HarmonyIO\SmtpClient\ServerResponse\StartedLogInAuth\Password;
@@ -124,6 +127,11 @@ class Transaction
             case AcceptedCredentials::class:
                 $this->processValidLogInCredentials();
                 return;
+
+            case Challenge::class:
+                /** @var Challenge $serverResponse */
+                $this->processCramMd5Challenge($serverResponse);
+                return;
         }
     }
 
@@ -204,6 +212,10 @@ class Transaction
             case 'LOGIN':
                 $this->startLogInAuthentication();
                 return;
+
+            case 'CRAM-MD5':
+                $this->startCramMd5Authentication();
+                return;
         }
 
         $this->status = TransactionStatus::SENT_HELO();
@@ -231,6 +243,18 @@ class Transaction
     private function processLogInPassword(): void
     {
         $this->socket->write((string) new LogInPassword($this->authentication));
+    }
+
+    private function startCramMd5Authentication(): void
+    {
+        $this->status = TransactionStatus::STARTED_CRAM_MD5_AUTH();
+
+        $this->socket->write((string) new StartCramMd5());
+    }
+
+    private function processCramMd5Challenge(Challenge $challenge): void
+    {
+        $this->socket->write((string) new CramMd5Response($this->authentication, $challenge));
     }
 
     private function processInvalidLogInCredentials(): void

@@ -10,8 +10,8 @@ class Authentication extends BaseResponse
 
     private const SUPPORTED_AUTHENTICATION_METHODS = [
         'PLAIN',
-        //'LOGIN',
-        //'CRAM-MD5',
+        'LOGIN',
+        'CRAM-MD5',
     ];
 
     /** @var string[] */

@@ -3,6 +3,7 @@
 namespace HarmonyIO\SmtpClient;
 
 use HarmonyIO\SmtpClient\Exception\NulByte;
+use HarmonyIO\SmtpClient\Exception\SpaceCharacter;
 
 class Authentication
 {
@@ -16,6 +17,10 @@ class Authentication
     {
         if (strpos($username, "\0") !== false) {
             throw new NulByte();
+        }
+
+        if (strpos($password, ' ') !== false) {
+            throw new SpaceCharacter();
         }
 
         if (strpos($password, "\0") !== false) {
