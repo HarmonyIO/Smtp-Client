@@ -34,6 +34,7 @@ class Authentication extends BaseResponse
         parent::__construct($line);
     }
 
+    // phpcs:ignore SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedMethod
     private function filterSupportedAuthenticationMethods(string $authenticationMethod): bool
     {
         return in_array(strtoupper($authenticationMethod), self::SUPPORTED_AUTHENTICATION_METHODS, true);
