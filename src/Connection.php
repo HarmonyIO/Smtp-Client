@@ -31,9 +31,9 @@ class Connection
         $this->authentication = $authentication;
     }
 
-    public function connect(): Promise
+    public function connect(Envelop $envelop): Promise
     {
-        return call(function () {
+        return call(function () use ($envelop) {
             /** @var AmpSocket $socket */
             $socket = yield connect(
                 sprintf('tcp://%s:%s', $this->serverAddress->getHost(), $this->serverAddress->getPort())
@@ -44,7 +44,7 @@ class Connection
             );
 
             $socket = new Socket($this->logger, $socket);
-            $transaction = new Transaction($this->logger, $socket, new ServerResponseFactory(), $this->authentication);
+            $transaction = new Transaction($this->logger, $socket, new ServerResponseFactory(), $envelop, $this->authentication);
 
             $buffer = '';
             // phpcs:ignore SlevomatCodingStandard.ControlStructures.DisallowYodaComparison.DisallowedYodaComparison

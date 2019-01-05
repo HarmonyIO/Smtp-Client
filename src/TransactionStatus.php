@@ -12,6 +12,7 @@ use MyCLabs\Enum\Enum;
  * @method static TransactionStatus STARTED_PLAIN_AUTH()
  * @method static TransactionStatus STARTED_LOGIN_AUTH()
  * @method static TransactionStatus STARTED_CRAM_MD5_AUTH()
+ * @method static TransactionStatus SENT_MAIL_FROM()
  */
 class TransactionStatus extends Enum
 {
@@ -23,5 +24,6 @@ class TransactionStatus extends Enum
     private const STARTED_PLAIN_AUTH    = 5;
     private const STARTED_LOGIN_AUTH    = 6;
     private const STARTED_CRAM_MD5_AUTH = 7;
+    private const SENT_MAIL_FROM        = 8;
     // phpcs:enable SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedConstant
 }

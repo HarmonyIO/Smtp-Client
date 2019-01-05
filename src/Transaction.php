@@ -9,6 +9,7 @@ use HarmonyIO\SmtpClient\Command\Auth\Plain;
 use HarmonyIO\SmtpClient\Command\Auth\StartCramMd5;
 use HarmonyIO\SmtpClient\Command\Auth\StartLogIn;
 use HarmonyIO\SmtpClient\Command\Ehlo;
+use HarmonyIO\SmtpClient\Command\Envelop\MailFrom;
 use HarmonyIO\SmtpClient\Command\Helo;
 use HarmonyIO\SmtpClient\Command\Quit;
 use HarmonyIO\SmtpClient\Exception\InvalidCredentials as InvalidCredentialsException;
@@ -23,6 +24,7 @@ use HarmonyIO\SmtpClient\ServerResponse\ProcessingEhlo\UnsupportedExtension;
 use HarmonyIO\SmtpClient\ServerResponse\Response;
 use HarmonyIO\SmtpClient\ServerResponse\SentEhlo\EhloResponse;
 use HarmonyIO\SmtpClient\ServerResponse\SentEhlo\InvalidCommand;
+use HarmonyIO\SmtpClient\ServerResponse\SentMailFrom\AcceptedMailFrom;
 use HarmonyIO\SmtpClient\ServerResponse\StartedCramMd5Auth\Challenge;
 use HarmonyIO\SmtpClient\ServerResponse\StartedLogInAuth\AcceptedCredentials;
 use HarmonyIO\SmtpClient\ServerResponse\StartedLogInAuth\InvalidCredentials;
@@ -40,6 +42,9 @@ class Transaction
     /** @var ServerResponseFactory */
     private $serverResponseFactory;
 
+    /** @var Envelop */
+    private $envelop;
+
     /** @var Authentication|null */
     private $authentication;
 
@@ -53,11 +58,13 @@ class Transaction
         Output $logger,
         Socket $socket,
         ServerResponseFactory $serverResponseFactory,
+        Envelop $envelop,
         ?Authentication $authentication = null
     ) {
         $this->logger                = $logger;
         $this->socket                = $socket;
         $this->serverResponseFactory = $serverResponseFactory;
+        $this->envelop               = $envelop;
         $this->authentication        = $authentication;
 
         $this->status           = TransactionStatus::CONNECT();
@@ -131,6 +138,11 @@ class Transaction
             case Challenge::class:
                 /** @var Challenge $serverResponse */
                 $this->processCramMd5Challenge($serverResponse);
+                return;
+
+            case AcceptedMailFrom::class:
+                /** @var Challenge $serverResponse */
+                $this->processAcceptedMailFrom($serverResponse);
                 return;
         }
     }
@@ -266,7 +278,13 @@ class Transaction
 
     private function processValidLogInCredentials(): void
     {
-        var_dump('ACCEPTED CREDENTIALS \o/');
-        // continue smtp flow
+        $this->status = TransactionStatus::SENT_MAIL_FROM();
+
+        $this->socket->write((string) new MailFrom($this->envelop));
+    }
+
+    private function processAcceptedMailFrom(): void
+    {
+
     }
 }

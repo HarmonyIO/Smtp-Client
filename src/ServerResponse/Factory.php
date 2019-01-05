@@ -10,6 +10,7 @@ use HarmonyIO\SmtpClient\ServerResponse\ProcessingEhlo\Pipelining;
 use HarmonyIO\SmtpClient\ServerResponse\ProcessingEhlo\UnsupportedExtension;
 use HarmonyIO\SmtpClient\ServerResponse\SentEhlo\EhloResponse;
 use HarmonyIO\SmtpClient\ServerResponse\SentEhlo\InvalidCommand;
+use HarmonyIO\SmtpClient\ServerResponse\SentMailFrom\AcceptedMailFrom;
 use HarmonyIO\SmtpClient\ServerResponse\StartedCramMd5Auth\Challenge;
 use HarmonyIO\SmtpClient\ServerResponse\StartedLogInAuth\AcceptedCredentials;
 use HarmonyIO\SmtpClient\ServerResponse\StartedLogInAuth\InvalidCredentials;
@@ -54,6 +55,9 @@ class Factory
                 Challenge::class,
                 InvalidCredentials::class,
                 AcceptedCredentials::class,
+            ],
+            TransactionStatus::SENT_MAIL_FROM()->getValue() => [
+                AcceptedMailFrom::class,
             ],
         ];
     }

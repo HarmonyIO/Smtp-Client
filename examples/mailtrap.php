@@ -5,6 +5,8 @@ namespace HarmonyIO\SmtpClient\Examples;
 use Amp\Loop;
 use HarmonyIO\SmtpClient\Authentication;
 use HarmonyIO\SmtpClient\Connection;
+use HarmonyIO\SmtpClient\Envelop;
+use HarmonyIO\SmtpClient\Envelop\Address;
 use HarmonyIO\SmtpClient\Log\Level;
 use HarmonyIO\SmtpClient\Log\Output;
 use HarmonyIO\SmtpClient\ServerAddress;
@@ -18,5 +20,7 @@ Loop::run(static function () {
         new Authentication('username', 'password')
     );
 
-    yield $connection->connect();
+    yield $connection->connect(
+        new Envelop(new Address('sender@example.com', 'Foo Bar'), new Address('recipient1@example.com', 'Recipient One'))
+    );
 });
