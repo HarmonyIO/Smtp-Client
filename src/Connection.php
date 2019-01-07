@@ -11,7 +11,7 @@ use function Amp\Socket\connect;
 
 class Connection
 {
-    private const MAX_CUNK_SIZE = 512;
+    private const MAX_CHUNK_SIZE = 512;
 
     private const LINE_DELIMITER = "\r\n";
 
@@ -58,7 +58,7 @@ class Connection
                     $line   = substr($buffer, 0, $pos);
                     $buffer = substr($buffer, $pos + strlen(self::LINE_DELIMITER));
 
-                    if (strlen($line) > self::MAX_CUNK_SIZE) {
+                    if (strlen($line) > self::MAX_CHUNK_SIZE) {
                         //$socket->write((string) new SyntaxError('Line length limit exceeded.'));
                         //continue;
                     }
