@@ -13,11 +13,11 @@
     "prefer-stable": true,
     "require": {
         "php": "^7.3",
+        "ext-filter": "*",
         "ext-hash": "*",
         "ext-json": "*",
         "amphp/amp": "^2.1.1",
-        "amphp/socket": "^0.10.11",
-        "myclabs/php-enum": "^1.6.4"
+        "amphp/socket": "^0.10.11"
     },
     "require-dev": {
         "harmonyio/php-codesniffer-ruleset": "1.0.0-rc1",

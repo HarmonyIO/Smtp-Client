@@ -6,10 +6,7 @@ use Amp\Promise;
 use Amp\Socket\Socket as SocketConnection;
 use HarmonyIO\SmtpClient\Log\Output;
 
-/**
- * @method Promise end()
- */
-class Socket
+final class Socket implements SmtpSocket
 {
     /** @var Output */
     private $logger;
@@ -23,13 +20,6 @@ class Socket
         $this->socket = $socket;
     }
 
-    public function write(string $data): Promise
-    {
-        $this->logger->smtpOut($data);
-
-        return $this->socket->write($data);
-    }
-
     /**
      * @return Promise<null|string>
      */
@@ -39,11 +29,20 @@ class Socket
     }
 
     /**
-     * @param mixed[] $arguments
-     * @return mixed
+     * @return Promise<null>
      */
-    public function __call(string $name, array $arguments)
+    public function write(string $data): Promise
     {
-        return $this->socket->$name(...$arguments);
+        $this->logger->smtpOut($data);
+
+        return $this->socket->write($data);
+    }
+
+    /**
+     * @return Promise<null>
+     */
+    public function end(string $data = ''): Promise
+    {
+        return $this->socket->end($data);
     }
 }
