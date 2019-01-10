@@ -15,12 +15,12 @@ class Address
 
     public function __construct(string $emailAddress, ?string $name = null)
     {
-        if (preg_match('~(*ANY)^[^<>]+@[^<>]+\.[^<>]+$~u', $emailAddress) !==1) {
+        if (preg_match('~^[^<>\r\n]+@[^<>\r\n]+\.[^<>\r\n]+$~D', $emailAddress) !== 1) {
             throw new InvalidEmailAddress($emailAddress);
         }
 
         if ($name !== null && (strpos($name, "\r") !== false || strpos($name, "\n") !== false)) {
-            throw new InvalidEmailName($emailAddress);
+            throw new InvalidEmailName($name);
         }
 
         $this->emailAddress = $emailAddress;

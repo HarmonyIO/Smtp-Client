@@ -8,6 +8,6 @@ class DataNotAccepted extends Smtp
 {
     public function __construct(string $line)
     {
-        parent::__construct('The data was not accepted by the server with the message: `%s`.', $line);
+        parent::__construct(sprintf('The data was not accepted by the server with the message: `%s`.', $line));
     }
 }

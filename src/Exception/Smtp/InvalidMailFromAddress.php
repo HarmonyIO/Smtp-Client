@@ -8,6 +8,6 @@ class InvalidMailFromAddress extends Smtp
 {
     public function __construct(string $line)
     {
-        parent::__construct('The mail from address was not accepted by the server with the message: `%s`.', $line);
+        parent::__construct(sprintf('The mail from address was not accepted by the server with the message: `%s`.', $line));
     }
 }
