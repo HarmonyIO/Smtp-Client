@@ -52,6 +52,6 @@ Loop::run(static function () {
         new Handshake($replyFactory, $logger),
         new ExtensionNegotiation($replyFactory, $logger, $connection, $clientAddress, $extensions),
         new LogIn($replyFactory, $logger, $connection, $extensions, $authentication),
-        new Mail($replyFactory, $logger, $connection, $extensions, $envelop),
+        new Mail($replyFactory, $logger, $connection, $envelop),
     );
 });

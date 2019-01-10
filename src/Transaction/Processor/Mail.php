@@ -65,9 +65,6 @@ final class Mail implements Processor
     /** @var Socket */
     private $connection;
 
-    /** @var Collection */
-    private $extensionCollection;
-
     /** @var Envelop */
     private $envelop;
 
@@ -78,13 +75,11 @@ final class Mail implements Processor
         Factory $replyFactory,
         Output $logger,
         Socket $connection,
-        Collection $extensionCollection,
         Envelop $envelop
     ) {
         $this->replyFactory        = $replyFactory;
         $this->logger              = $logger;
         $this->connection          = $connection;
-        $this->extensionCollection = $extensionCollection;
         $this->envelop             = $envelop;
         $this->recipientsToSend    = $envelop->getRecipients();
     }
@@ -186,6 +181,7 @@ final class Mail implements Processor
         $this->currentStatus = new Status(Status::SENT_MAIL_FROM);
 
         $this->connection->write((string) new MailFrom($this->envelop->getMailFromAddress()));
+        $this->processMailFromAccepted();
     }
 
     private function processMailFromNotAccepted(Reply $reply): void
