@@ -18,7 +18,6 @@ use HarmonyIO\SmtpClient\Transaction\Command\HeadersAndBodySeparator;
 use HarmonyIO\SmtpClient\Transaction\Command\MailFrom;
 use HarmonyIO\SmtpClient\Transaction\Command\Quit;
 use HarmonyIO\SmtpClient\Transaction\Command\RcptTo;
-use HarmonyIO\SmtpClient\Transaction\Extension\Collection;
 use HarmonyIO\SmtpClient\Transaction\Reply\Factory;
 use HarmonyIO\SmtpClient\Transaction\Reply\PermanentNegativeCompletion;
 use HarmonyIO\SmtpClient\Transaction\Reply\PositiveCompletion;
