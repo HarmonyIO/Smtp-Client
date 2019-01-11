@@ -43,6 +43,8 @@ final class Socket implements SmtpSocket
      */
     public function end(string $data = ''): Promise
     {
+        $this->logger->smtpOut($data);
+
         return $this->socket->end($data);
     }
 }
