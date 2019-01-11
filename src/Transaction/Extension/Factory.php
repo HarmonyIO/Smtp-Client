@@ -2,7 +2,7 @@
 
 namespace HarmonyIO\SmtpClient\Transaction\Extension;
 
-final class Factory
+final class Factory implements Builder
 {
     public function build(string $replyText): ?object
     {

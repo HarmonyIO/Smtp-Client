@@ -19,7 +19,7 @@ class Authentication
             throw new NulByte();
         }
 
-        if (strpos($password, ' ') !== false) {
+        if (strpos($username, ' ') !== false) {
             throw new SpaceCharacter();
         }
 

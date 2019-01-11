@@ -20,10 +20,10 @@ abstract class BaseReply implements Reply
     private $lastLine;
 
     /** @var string|null */
-    private $extendedStatusCode;
+    private $extendedStatusCode = null;
 
     /** @var string|null */
-    private $text;
+    private $text = null;
 
     public function __construct(string $line)
     {
@@ -47,8 +47,15 @@ abstract class BaseReply implements Reply
     {
         preg_match(self::TEXT_PATTERN, $text, $matches);
 
-        $this->extendedStatusCode = $matches['extendedStatusCode'] ?? null;
-        $this->text               = $matches['text'] ?? null;
+        if (isset($matches['extendedStatusCode']) && $matches['extendedStatusCode']) {
+            $this->extendedStatusCode = $matches['extendedStatusCode'];
+        }
+
+        if (!isset($matches['text']) || !$matches['text']) {
+            return;
+        }
+
+        $this->text = $matches['text'];
     }
 
     public function getCode(): int

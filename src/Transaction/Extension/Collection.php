@@ -12,7 +12,7 @@ final class Collection
     /** @var object[] */
     private $enabledExtensions = [];
 
-    public function __construct(Factory $factory)
+    public function __construct(Builder $factory)
     {
         $this->factory = $factory;
     }
