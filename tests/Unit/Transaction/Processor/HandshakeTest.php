@@ -25,6 +25,7 @@ class HandshakeTest extends TestCase
     /** @var SmtpSocket|MockObject $smtpSocket */
     private $smtpSocket;
 
+    // phpcs:ignore SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
     public function setUp()
     {
         $this->logger     = new Output(new Level(Level::NONE));
