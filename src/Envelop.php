@@ -6,7 +6,7 @@ use HarmonyIO\SmtpClient\ClientAddress\Address as ClientAddress;
 use HarmonyIO\SmtpClient\Envelop\Address;
 use HarmonyIO\SmtpClient\Envelop\Header;
 
-class Envelop
+final class Envelop
 {
     /** @var Address */
     private $mailFromAddress;

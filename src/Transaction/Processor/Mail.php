@@ -180,7 +180,6 @@ final class Mail implements Processor
         $this->currentStatus = new Status(Status::SENT_MAIL_FROM);
 
         $this->connection->write((string) new MailFrom($this->envelop->getMailFromAddress()));
-        $this->processMailFromAccepted();
     }
 
     private function processMailFromNotAccepted(Reply $reply): void
