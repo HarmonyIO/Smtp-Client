@@ -8,7 +8,6 @@ use HarmonyIO\PHPUnitExtension\TestCase;
 use HarmonyIO\SmtpClient\Authentication;
 use HarmonyIO\SmtpClient\Buffer;
 use HarmonyIO\SmtpClient\Exception\Smtp\InvalidCredentials;
-use HarmonyIO\SmtpClient\Exception\Smtp\TransmissionChannelClosed;
 use HarmonyIO\SmtpClient\Log\Level;
 use HarmonyIO\SmtpClient\Log\Output;
 use HarmonyIO\SmtpClient\SmtpSocket;
@@ -27,41 +26,30 @@ class LogInTest extends TestCase
     /** @var Output */
     private $logger;
 
+    /** @var SmtpSocket|MockObject $smtpSocket */
+    private $smtpSocket;
+
     /** @var ServerSocket|MockObject $socket */
     private $socket;
 
-    /** @var Builder|MockObject $extensionFactory */
+    /** @var Builder|MockObject $socket */
     private $extensionFactory;
-
-    /** @var SmtpSocket|MockObject $smtpSocket */
-    private $smtpSocket;
 
     /** @var Collection */
     private $extensions;
 
     /** @var LogIn */
-    private $unauthenticatedProcessor;
-
-    /** @var LogIn */
-    private $authenticatedProcessor;
+    private $processor;
 
     // phpcs:ignore SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
     public function setUp()
     {
         $this->logger           = new Output(new Level(Level::NONE));
+        $this->smtpSocket       = $this->createMock(SmtpSocket::class);
         $this->socket           = $this->createMock(ServerSocket::class);
         $this->extensionFactory = $this->createMock(Builder::class);
-        $this->smtpSocket       = $this->createMock(SmtpSocket::class);
         $this->extensions       = new Collection($this->extensionFactory);
-
-        $this->unauthenticatedProcessor = new LogIn(
-            new Factory(),
-            $this->logger,
-            new Socket($this->logger, $this->socket),
-            $this->extensions
-        );
-
-        $this->authenticatedProcessor = new LogIn(
+        $this->processor        = new LogIn(
             new Factory(),
             $this->logger,
             new Socket($this->logger, $this->socket),
@@ -70,32 +58,41 @@ class LogInTest extends TestCase
         );
     }
 
-    public function testProcessBailsOutWhenUnauthenticated(): void
+    public function testProcessBailsOutWhenAuthenticationIsNotSet(): void
     {
         $this->smtpSocket
             ->expects($this->never())
             ->method('read')
         ;
 
-        $buffer = new Buffer($this->smtpSocket, $this->logger);
+        $processor = new LogIn(
+            new Factory(),
+            $this->logger,
+            new Socket($this->logger, $this->socket),
+            new Collection($this->extensionFactory)
+        );
 
-        wait($this->unauthenticatedProcessor->process($buffer));
+        $this->assertNull($processor->process(new Buffer($this->smtpSocket, $this->logger)));
     }
 
-    public function testProcessBailsOutWhenTheAuthExtensionIsNotEnabled(): void
+    public function testProcessBailsOutWhenServerDoesNotSupportAuthentication(): void
     {
         $this->smtpSocket
             ->expects($this->never())
             ->method('read')
         ;
 
-        $buffer = new Buffer($this->smtpSocket, $this->logger);
-
-        wait($this->authenticatedProcessor->process($buffer));
+        $this->assertNull($this->processor->process(new Buffer($this->smtpSocket, $this->logger)));
     }
 
-    public function testProcessSendsPlainLogInRequestAndFailsWithATransientNegativeCompletion(): void
+    public function testProcessRunsPlainAuthentication(): void
     {
+        $this->smtpSocket
+            ->expects($this->once())
+            ->method('read')
+            ->willReturn(new Success("500 error\r\n"))
+        ;
+
         $this->extensionFactory
             ->method('build')
             ->willReturn(new Auth('PLAIN'))
@@ -106,7 +103,7 @@ class LogInTest extends TestCase
 
         $reply
             ->method('getText')
-            ->willReturn('FOO BAR')
+            ->willReturn('200 success')
         ;
 
         $this->extensions->enable($reply);
@@ -121,99 +118,19 @@ class LogInTest extends TestCase
             })
         ;
 
-        $this->smtpSocket
-            ->expects($this->once())
-            ->method('read')
-            ->willReturn(new Success("400 error\r\n"))
-        ;
+        $this->expectException(InvalidCredentials::class);
 
-        $buffer = new Buffer($this->smtpSocket, $this->logger);
-
-        $this->expectException(TransmissionChannelClosed::class);
-
-        wait($this->authenticatedProcessor->process($buffer));
+        wait($this->processor->process(new Buffer($this->smtpSocket, $this->logger)));
     }
 
-    public function testProcessSendsPlainLogInRequestAndFailsWithAPermanentNegativeCompletion(): void
+    public function testProcessRunsLoginAuthentication(): void
     {
-        $this->extensionFactory
-            ->method('build')
-            ->willReturn(new Auth('PLAIN'))
-        ;
-
-        /** @var Reply|MockObject $reply */
-        $reply = $this->createMock(Reply::class);
-
-        $reply
-            ->method('getText')
-            ->willReturn('FOO BAR')
-        ;
-
-        $this->extensions->enable($reply);
-
-        $this->socket
-            ->expects($this->once())
-            ->method('write')
-            ->willReturnCallback(function (string $data) {
-                $this->assertSame("AUTH PLAIN AFRoZVVzZXJuYW1lAFRoZVBhc3N3b3Jk\r\n", $data);
-
-                return new Success();
-            })
-        ;
-
         $this->smtpSocket
             ->expects($this->once())
             ->method('read')
             ->willReturn(new Success("500 error\r\n"))
         ;
 
-        $buffer = new Buffer($this->smtpSocket, $this->logger);
-
-        $this->expectException(InvalidCredentials::class);
-
-        wait($this->authenticatedProcessor->process($buffer));
-    }
-
-    public function testProcessSendsPlainLogInRequestAndSucceeds(): void
-    {
-        $this->extensionFactory
-            ->method('build')
-            ->willReturn(new Auth('PLAIN'))
-        ;
-
-        /** @var Reply|MockObject $reply */
-        $reply = $this->createMock(Reply::class);
-
-        $reply
-            ->method('getText')
-            ->willReturn('FOO BAR')
-        ;
-
-        $this->extensions->enable($reply);
-
-        $this->socket
-            ->expects($this->once())
-            ->method('write')
-            ->willReturnCallback(function (string $data) {
-                $this->assertSame("AUTH PLAIN AFRoZVVzZXJuYW1lAFRoZVBhc3N3b3Jk\r\n", $data);
-
-                return new Success();
-            })
-        ;
-
-        $this->smtpSocket
-            ->expects($this->once())
-            ->method('read')
-            ->willReturn(new Success("200 success\r\n"))
-        ;
-
-        $buffer = new Buffer($this->smtpSocket, $this->logger);
-
-        wait($this->authenticatedProcessor->process($buffer));
-    }
-
-    public function testProcessSendsLoginLogInRequestAndFailsWithATransientNegativeCompletion(): void
-    {
         $this->extensionFactory
             ->method('build')
             ->willReturn(new Auth('LOGIN'))
@@ -224,7 +141,7 @@ class LogInTest extends TestCase
 
         $reply
             ->method('getText')
-            ->willReturn('FOO BAR')
+            ->willReturn('200 success')
         ;
 
         $this->extensions->enable($reply);
@@ -239,410 +156,46 @@ class LogInTest extends TestCase
             })
         ;
 
-        $this->smtpSocket
-            ->expects($this->once())
-            ->method('read')
-            ->willReturn(new Success("400 error\r\n"))
-        ;
+        $this->expectException(InvalidCredentials::class);
 
-        $buffer = new Buffer($this->smtpSocket, $this->logger);
-
-        $this->expectException(TransmissionChannelClosed::class);
-
-        wait($this->authenticatedProcessor->process($buffer));
+        wait($this->processor->process(new Buffer($this->smtpSocket, $this->logger)));
     }
 
-    public function testProcessSendsLoginLogInRequestAndFailsWithAPermanentNegativeCompletion(): void
+    public function testProcessRunsCramMd5Authentication(): void
     {
-        $this->extensionFactory
-            ->method('build')
-            ->willReturn(new Auth('LOGIN'))
-        ;
-
-        /** @var Reply|MockObject $reply */
-        $reply = $this->createMock(Reply::class);
-
-        $reply
-            ->method('getText')
-            ->willReturn('FOO BAR')
-        ;
-
-        $this->extensions->enable($reply);
-
-        $this->socket
-            ->expects($this->once())
-            ->method('write')
-            ->willReturnCallback(function (string $data) {
-                $this->assertSame("AUTH LOGIN\r\n", $data);
-
-                return new Success();
-            })
-        ;
-
         $this->smtpSocket
             ->expects($this->once())
             ->method('read')
             ->willReturn(new Success("500 error\r\n"))
         ;
 
-        $buffer = new Buffer($this->smtpSocket, $this->logger);
+        $this->extensionFactory
+            ->method('build')
+            ->willReturn(new Auth('CRAM-MD5'))
+        ;
+
+        /** @var Reply|MockObject $reply */
+        $reply = $this->createMock(Reply::class);
+
+        $reply
+            ->method('getText')
+            ->willReturn('200 success')
+        ;
+
+        $this->extensions->enable($reply);
+
+        $this->socket
+            ->expects($this->once())
+            ->method('write')
+            ->willReturnCallback(function (string $data) {
+                $this->assertSame("AUTH CRAM-MD5\r\n", $data);
+
+                return new Success();
+            })
+        ;
 
         $this->expectException(InvalidCredentials::class);
 
-        wait($this->authenticatedProcessor->process($buffer));
-    }
-
-    public function testProcessSendsLoginLogInRequestAndSucceedsWithAPositiveCompletion(): void
-    {
-        $this->extensionFactory
-            ->method('build')
-            ->willReturn(new Auth('LOGIN'))
-        ;
-
-        /** @var Reply|MockObject $reply */
-        $reply = $this->createMock(Reply::class);
-
-        $reply
-            ->method('getText')
-            ->willReturn('FOO BAR')
-        ;
-
-        $this->extensions->enable($reply);
-
-        $this->socket
-            ->expects($this->once())
-            ->method('write')
-            ->willReturnCallback(function (string $data) {
-                $this->assertSame("AUTH LOGIN\r\n", $data);
-
-                return new Success();
-            })
-        ;
-
-        $this->smtpSocket
-            ->expects($this->once())
-            ->method('read')
-            ->willReturn(new Success("200 success\r\n"))
-        ;
-
-        $buffer = new Buffer($this->smtpSocket, $this->logger);
-
-        wait($this->authenticatedProcessor->process($buffer));
-    }
-
-    public function testProcessSendsLoginLogInRequestAndSucceedsWithAPositiveIntermediates(): void
-    {
-        $this->extensionFactory
-            ->method('build')
-            ->willReturn(new Auth('LOGIN'))
-        ;
-
-        /** @var Reply|MockObject $reply */
-        $reply = $this->createMock(Reply::class);
-
-        $reply
-            ->method('getText')
-            ->willReturn('FOO BAR')
-        ;
-
-        $this->extensions->enable($reply);
-
-        $this->socket
-            ->expects($this->at(0))
-            ->method('write')
-            ->willReturnCallback(function (string $data) {
-                $this->assertSame("AUTH LOGIN\r\n", $data);
-
-                return new Success();
-            })
-        ;
-
-        $this->socket
-            ->expects($this->at(1))
-            ->method('write')
-            ->willReturnCallback(function (string $data) {
-                $this->assertSame("VGhlVXNlcm5hbWU=\r\n", $data);
-
-                return new Success();
-            })
-        ;
-
-        $this->socket
-            ->expects($this->at(2))
-            ->method('write')
-            ->willReturnCallback(function (string $data) {
-                $this->assertSame("VGhlUGFzc3dvcmQ=\r\n", $data);
-
-                return new Success();
-            })
-        ;
-
-        $this->smtpSocket
-            ->expects($this->at(0))
-            ->method('read')
-            ->willReturn(new Success("334 VXNlcm5hbWU6\r\n"))
-        ;
-
-        $this->smtpSocket
-            ->expects($this->at(1))
-            ->method('read')
-            ->willReturn(new Success("334 UGFzc3dvcmQ6\r\n"))
-        ;
-
-        $this->smtpSocket
-            ->expects($this->at(2))
-            ->method('read')
-            ->willReturn(new Success("200 success\r\n"))
-        ;
-
-        $buffer = new Buffer($this->smtpSocket, $this->logger);
-
-        wait($this->authenticatedProcessor->process($buffer));
-    }
-
-    public function testProcessSendsCramMd5LogInRequestAndFailsWithATransientNegativeCompletion(): void
-    {
-        $this->extensionFactory
-            ->method('build')
-            ->willReturn(new Auth('CRAM-MD5'))
-        ;
-
-        /** @var Reply|MockObject $reply */
-        $reply = $this->createMock(Reply::class);
-
-        $reply
-            ->method('getText')
-            ->willReturn('FOO BAR')
-        ;
-
-        $this->extensions->enable($reply);
-
-        $this->socket
-            ->expects($this->once())
-            ->method('write')
-            ->willReturnCallback(function (string $data) {
-                $this->assertSame("AUTH CRAM-MD5\r\n", $data);
-
-                return new Success();
-            })
-        ;
-
-        $this->smtpSocket
-            ->expects($this->once())
-            ->method('read')
-            ->willReturn(new Success("400 error\r\n"))
-        ;
-
-        $buffer = new Buffer($this->smtpSocket, $this->logger);
-
-        $this->expectException(TransmissionChannelClosed::class);
-
-        wait($this->authenticatedProcessor->process($buffer));
-    }
-
-    public function testProcessSendsCramMd5LogInRequestAndFailsWithAPermanentNegativeCompletion(): void
-    {
-        $this->extensionFactory
-            ->method('build')
-            ->willReturn(new Auth('CRAM-MD5'))
-        ;
-
-        /** @var Reply|MockObject $reply */
-        $reply = $this->createMock(Reply::class);
-
-        $reply
-            ->method('getText')
-            ->willReturn('FOO BAR')
-        ;
-
-        $this->extensions->enable($reply);
-
-        $this->socket
-            ->expects($this->once())
-            ->method('write')
-            ->willReturnCallback(function (string $data) {
-                $this->assertSame("AUTH CRAM-MD5\r\n", $data);
-
-                return new Success();
-            })
-        ;
-
-        $this->smtpSocket
-            ->expects($this->once())
-            ->method('read')
-            ->willReturn(new Success("500 error\r\n"))
-        ;
-
-        $buffer = new Buffer($this->smtpSocket, $this->logger);
-
-        $this->expectException(InvalidCredentials::class);
-
-        wait($this->authenticatedProcessor->process($buffer));
-    }
-
-    public function testProcessSendsCramMd5LogInRequestAndFirstSucceedsThenFailsWithATransientNegativeCompletion(): void
-    {
-        $this->extensionFactory
-            ->method('build')
-            ->willReturn(new Auth('CRAM-MD5'))
-        ;
-
-        /** @var Reply|MockObject $reply */
-        $reply = $this->createMock(Reply::class);
-
-        $reply
-            ->method('getText')
-            ->willReturn('FOO BAR')
-        ;
-
-        $this->extensions->enable($reply);
-
-        $this->socket
-            ->expects($this->at(0))
-            ->method('write')
-            ->willReturnCallback(function (string $data) {
-                $this->assertSame("AUTH CRAM-MD5\r\n", $data);
-
-                return new Success();
-            })
-        ;
-
-        $this->socket
-            ->expects($this->at(1))
-            ->method('write')
-            ->willReturnCallback(function (string $data) {
-                $this->assertSame("VGhlVXNlcm5hbWUgNTU5YTE1OTc2YjFiZjk0ZmE2NmY4NGUzMWEzOWRmZDI=\r\n", $data);
-
-                return new Success();
-            })
-        ;
-
-        $this->smtpSocket
-            ->expects($this->at(0))
-            ->method('read')
-            ->willReturn(new Success("334 PDQxOTI5NDIzNDEuMTI4Mjg0NzJAc291cmNlZm91ci5hbmRyZXcuY211LmVkdT4=\r\n"))
-        ;
-
-        $this->smtpSocket
-            ->expects($this->at(1))
-            ->method('read')
-            ->willReturn(new Success("400 error\r\n"))
-        ;
-
-        $buffer = new Buffer($this->smtpSocket, $this->logger);
-
-        $this->expectException(TransmissionChannelClosed::class);
-
-        wait($this->authenticatedProcessor->process($buffer));
-    }
-
-    public function testProcessSendsCramMd5LogInRequestAndFirstSucceedsThenFailsWithAPermanentNegativeCompletion(): void
-    {
-        $this->extensionFactory
-            ->method('build')
-            ->willReturn(new Auth('CRAM-MD5'))
-        ;
-
-        /** @var Reply|MockObject $reply */
-        $reply = $this->createMock(Reply::class);
-
-        $reply
-            ->method('getText')
-            ->willReturn('FOO BAR')
-        ;
-
-        $this->extensions->enable($reply);
-
-        $this->socket
-            ->expects($this->at(0))
-            ->method('write')
-            ->willReturnCallback(function (string $data) {
-                $this->assertSame("AUTH CRAM-MD5\r\n", $data);
-
-                return new Success();
-            })
-        ;
-
-        $this->socket
-            ->expects($this->at(1))
-            ->method('write')
-            ->willReturnCallback(function (string $data) {
-                $this->assertSame("VGhlVXNlcm5hbWUgNTU5YTE1OTc2YjFiZjk0ZmE2NmY4NGUzMWEzOWRmZDI=\r\n", $data);
-
-                return new Success();
-            })
-        ;
-
-        $this->smtpSocket
-            ->expects($this->at(0))
-            ->method('read')
-            ->willReturn(new Success("334 PDQxOTI5NDIzNDEuMTI4Mjg0NzJAc291cmNlZm91ci5hbmRyZXcuY211LmVkdT4=\r\n"))
-        ;
-
-        $this->smtpSocket
-            ->expects($this->at(1))
-            ->method('read')
-            ->willReturn(new Success("500 error\r\n"))
-        ;
-
-        $buffer = new Buffer($this->smtpSocket, $this->logger);
-
-        $this->expectException(InvalidCredentials::class);
-
-        wait($this->authenticatedProcessor->process($buffer));
-    }
-
-    public function testProcessCramMd5LoginSucceeds(): void
-    {
-        $this->extensionFactory
-            ->method('build')
-            ->willReturn(new Auth('CRAM-MD5'))
-        ;
-
-        /** @var Reply|MockObject $reply */
-        $reply = $this->createMock(Reply::class);
-
-        $reply
-            ->method('getText')
-            ->willReturn('FOO BAR')
-        ;
-
-        $this->extensions->enable($reply);
-
-        $this->socket
-            ->expects($this->at(0))
-            ->method('write')
-            ->willReturnCallback(function (string $data) {
-                $this->assertSame("AUTH CRAM-MD5\r\n", $data);
-
-                return new Success();
-            })
-        ;
-
-        $this->socket
-            ->expects($this->at(1))
-            ->method('write')
-            ->willReturnCallback(function (string $data) {
-                $this->assertSame("VGhlVXNlcm5hbWUgNTU5YTE1OTc2YjFiZjk0ZmE2NmY4NGUzMWEzOWRmZDI=\r\n", $data);
-
-                return new Success();
-            })
-        ;
-
-        $this->smtpSocket
-            ->expects($this->at(0))
-            ->method('read')
-            ->willReturn(new Success("334 PDQxOTI5NDIzNDEuMTI4Mjg0NzJAc291cmNlZm91ci5hbmRyZXcuY211LmVkdT4=\r\n"))
-        ;
-
-        $this->smtpSocket
-            ->expects($this->at(1))
-            ->method('read')
-            ->willReturn(new Success("200 success\r\n"))
-        ;
-
-        $buffer = new Buffer($this->smtpSocket, $this->logger);
-
-        wait($this->authenticatedProcessor->process($buffer));
+        wait($this->processor->process(new Buffer($this->smtpSocket, $this->logger)));
     }
 }
