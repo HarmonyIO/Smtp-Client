@@ -111,6 +111,23 @@ class ProcessRecipientsTest extends TestCase
         $this->assertSame(Status::SENT_RECIPIENTS, $status->getValue());
     }
 
+    public function testProcessResultsInSentRecipientsStatusWhenLastRecipientErrors(): void
+    {
+        $this->smtpSocket
+            ->method('read')
+            ->willReturnOnConsecutiveCalls(
+                new Success("200 success\r\n"),
+                new Success("500 error\r\n"),
+                new Success("500 success\r\n")
+            )
+        ;
+
+        /** @var Status $status */
+        $status = wait($this->processor->process(new Buffer($this->smtpSocket, $this->logger)));
+
+        $this->assertSame(Status::SENT_RECIPIENTS, $status->getValue());
+    }
+
     public function testProcessSendsAllRecipientsWhenAllAreAccepted(): void
     {
         $this->smtpSocket
