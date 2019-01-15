@@ -72,7 +72,7 @@ class ProcessHelo implements Processor
     {
         $this->currentStatus = new Status(Status::SEND_HELO);
 
-        $this->connection->write((string) new Helo($this->clientAddress));
+        $this->connection->write(new Helo($this->clientAddress));
 
         return new Success();
     }

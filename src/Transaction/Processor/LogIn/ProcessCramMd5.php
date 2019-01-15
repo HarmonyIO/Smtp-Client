@@ -90,7 +90,7 @@ class ProcessCramMd5 implements Processor
     {
         $this->currentStatus = new Status(Status::AWAITING_CRAM_MD5_CHALLENGE);
 
-        $this->connection->write((string) new AuthCramMd5Start());
+        $this->connection->write(new AuthCramMd5Start());
 
         return new Success();
     }
@@ -127,7 +127,7 @@ class ProcessCramMd5 implements Processor
     {
         $this->currentStatus = new Status(Status::SENT_CRAM_MD5_RESPONSE);
 
-        return $this->connection->write((string) new AuthCramMd5Response($this->authentication, $reply->getText()));
+        return $this->connection->write(new AuthCramMd5Response($this->authentication, $reply->getText()));
     }
 
     private function processCredentialsAccepted(): Promise

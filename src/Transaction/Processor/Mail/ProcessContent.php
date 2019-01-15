@@ -72,9 +72,9 @@ class ProcessContent implements Processor
     {
         $this->currentStatus = new Status(Status::SENT_CONTENT);
 
-        $this->connection->write((string) new BodyLine($this->body));
+        $this->connection->write(new BodyLine($this->body));
 
-        return $this->connection->write((string) new EndData());
+        return $this->connection->write(new EndData());
     }
 
     private function processReply(Reply $reply): Promise
@@ -93,12 +93,12 @@ class ProcessContent implements Processor
     {
         $this->currentStatus = new Status(Status::COMPLETED);
 
-        return $this->connection->write((string) new Quit());
+        return $this->connection->write(new Quit());
     }
 
     private function processContentNotAccepted(Reply $reply): Promise
     {
-        $this->connection->write((string) new Quit());
+        $this->connection->write(new Quit());
 
         throw new DataNotAccepted($reply->getText());
     }

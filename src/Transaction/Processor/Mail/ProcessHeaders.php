@@ -39,9 +39,9 @@ class ProcessHeaders implements Processor
     private function processHeaders(): Promise
     {
         foreach ($this->headers as $header) {
-            $this->connection->write((string) new HeaderCommand($header));
+            $this->connection->write(new HeaderCommand($header));
         }
 
-        return $this->connection->write((string) new HeadersAndBodySeparator());
+        return $this->connection->write(new HeadersAndBodySeparator());
     }
 }

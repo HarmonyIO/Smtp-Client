@@ -78,7 +78,7 @@ class ProcessRecipients implements Processor
     {
         $recipient = array_shift($this->recipients);
 
-        return $this->connection->write((string) new RcptTo($recipient));
+        return $this->connection->write(new RcptTo($recipient));
     }
 
     private function processReply(Reply $reply): Promise

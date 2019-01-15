@@ -4,7 +4,7 @@ namespace HarmonyIO\SmtpClient\Transaction\Command;
 
 use HarmonyIO\SmtpClient\Envelop\Header as EnvelopHeader;
 
-final class Header extends BaseCommand
+final class Header extends Command
 {
     public function __construct(EnvelopHeader $header)
     {

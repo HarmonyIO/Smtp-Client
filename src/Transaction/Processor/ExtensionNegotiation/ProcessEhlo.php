@@ -72,7 +72,7 @@ class ProcessEhlo implements Processor
     {
         $this->currentStatus = new Status(Status::SENT_EHLO);
 
-        $this->connection->write((string) new Ehlo($this->clientAddress));
+        $this->connection->write(new Ehlo($this->clientAddress));
 
         return new Success();
     }

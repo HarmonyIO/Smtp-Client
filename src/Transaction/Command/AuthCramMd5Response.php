@@ -4,7 +4,7 @@ namespace HarmonyIO\SmtpClient\Transaction\Command;
 
 use HarmonyIO\SmtpClient\Authentication;
 
-class AuthCramMd5Response extends BaseCommand
+class AuthCramMd5Response extends Command
 {
     public function __construct(Authentication $authentication, string $challenge)
     {

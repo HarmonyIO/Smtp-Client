@@ -2,7 +2,7 @@
 
 namespace HarmonyIO\SmtpClient\Transaction\Command;
 
-class AuthLoginStart extends BaseCommand
+class AuthLoginStart extends Command
 {
     public function __construct()
     {

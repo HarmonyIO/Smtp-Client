@@ -2,7 +2,7 @@
 
 namespace HarmonyIO\SmtpClient\Transaction\Command;
 
-class HeadersAndBodySeparator extends BaseCommand
+class HeadersAndBodySeparator extends Command
 {
     public function __construct()
     {

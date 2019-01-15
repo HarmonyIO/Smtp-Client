@@ -2,7 +2,7 @@
 
 namespace HarmonyIO\SmtpClient\Transaction\Command;
 
-abstract class BaseCommand
+abstract class Command
 {
     /** @var string */
     private $command;
