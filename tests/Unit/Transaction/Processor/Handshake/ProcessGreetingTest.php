@@ -6,7 +6,7 @@ use Amp\Success;
 use HarmonyIO\PHPUnitExtension\TestCase;
 use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Connection\SmtpSocket;
-use HarmonyIO\SmtpClient\Exception\TransactionFailed;
+use HarmonyIO\SmtpClient\Exception\Smtp\TransactionFailed;
 use HarmonyIO\SmtpClient\Log\Level;
 use HarmonyIO\SmtpClient\Log\Output;
 use HarmonyIO\SmtpClient\Transaction\Processor\Handshake\ProcessGreeting;

@@ -3,7 +3,7 @@
 namespace HarmonyIO\SmtpClient\Connection;
 
 use Amp\Promise;
-use HarmonyIO\SmtpClient\Exception\ConnectionClosedUnexpectedly;
+use HarmonyIO\SmtpClient\Exception\Smtp\ConnectionClosedUnexpectedly;
 use HarmonyIO\SmtpClient\Log\Output;
 use function Amp\call;
 

@@ -6,7 +6,7 @@ use Amp\Success;
 use HarmonyIO\PHPUnitExtension\TestCase;
 use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Connection\SmtpSocket;
-use HarmonyIO\SmtpClient\Exception\ConnectionClosedUnexpectedly;
+use HarmonyIO\SmtpClient\Exception\Smtp\ConnectionClosedUnexpectedly;
 use HarmonyIO\SmtpClient\Log\Output;
 use PHPUnit\Framework\MockObject\MockObject;
 use function Amp\Promise\wait;
