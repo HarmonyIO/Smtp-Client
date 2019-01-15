@@ -3,6 +3,7 @@
 namespace HarmonyIO\SmtpClient;
 
 use Amp\Promise;
+use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Transaction\Processor\Processor;
 use function Amp\call;
 

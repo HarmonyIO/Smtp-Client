@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace HarmonyIO\SmtpClientTest\Unit;
+namespace HarmonyIO\SmtpClientTest\Unit\Connection;
 
 use Amp\Success;
 use HarmonyIO\PHPUnitExtension\TestCase;
-use HarmonyIO\SmtpClient\Buffer;
+use HarmonyIO\SmtpClient\Connection\Buffer;
+use HarmonyIO\SmtpClient\Connection\SmtpSocket;
 use HarmonyIO\SmtpClient\Exception\ConnectionClosedUnexpectedly;
 use HarmonyIO\SmtpClient\Log\Output;
-use HarmonyIO\SmtpClient\SmtpSocket;
 use PHPUnit\Framework\MockObject\MockObject;
 use function Amp\Promise\wait;
 

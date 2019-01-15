@@ -1,14 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace HarmonyIO\SmtpClientTest\Unit;
+namespace HarmonyIO\SmtpClientTest\Unit\Connection;
 
 use Amp\Socket\ClientSocket;
 use Amp\Socket\ClientTlsContext;
 use Amp\Success;
 use HarmonyIO\PHPUnitExtension\TestCase;
+use HarmonyIO\SmtpClient\Connection\Socket;
 use HarmonyIO\SmtpClient\Log\Level;
 use HarmonyIO\SmtpClient\Log\Output;
-use HarmonyIO\SmtpClient\Socket;
 use HarmonyIO\SmtpClient\Transaction\Command\Quit;
 use PHPUnit\Framework\MockObject\MockObject;
 use function Amp\Promise\wait;

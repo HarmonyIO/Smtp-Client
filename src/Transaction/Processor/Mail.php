@@ -3,10 +3,10 @@
 namespace HarmonyIO\SmtpClient\Transaction\Processor;
 
 use Amp\Promise;
-use HarmonyIO\SmtpClient\Buffer;
+use HarmonyIO\SmtpClient\Connection\Buffer;
+use HarmonyIO\SmtpClient\Connection\Socket;
 use HarmonyIO\SmtpClient\Envelop;
 use HarmonyIO\SmtpClient\Log\Output;
-use HarmonyIO\SmtpClient\Socket;
 use HarmonyIO\SmtpClient\Transaction\Processor\Mail\ProcessContent;
 use HarmonyIO\SmtpClient\Transaction\Processor\Mail\ProcessData;
 use HarmonyIO\SmtpClient\Transaction\Processor\Mail\ProcessHeaders;

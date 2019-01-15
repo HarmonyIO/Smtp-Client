@@ -3,7 +3,7 @@
 namespace HarmonyIO\SmtpClient\Transaction\Processor;
 
 use Amp\Promise;
-use HarmonyIO\SmtpClient\Buffer;
+use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Log\Output;
 use HarmonyIO\SmtpClient\Transaction\Processor\Handshake\ProcessBanner;
 use HarmonyIO\SmtpClient\Transaction\Processor\Handshake\ProcessGreeting;

@@ -3,10 +3,10 @@
 namespace HarmonyIO\SmtpClient\Transaction\Processor\Mail;
 
 use Amp\Promise;
-use HarmonyIO\SmtpClient\Buffer;
+use HarmonyIO\SmtpClient\Connection\Buffer;
+use HarmonyIO\SmtpClient\Connection\Socket;
 use HarmonyIO\SmtpClient\Exception\Smtp\DataNotAccepted;
 use HarmonyIO\SmtpClient\Log\Output;
-use HarmonyIO\SmtpClient\Socket;
 use HarmonyIO\SmtpClient\Transaction\Command\BodyLine;
 use HarmonyIO\SmtpClient\Transaction\Command\EndData;
 use HarmonyIO\SmtpClient\Transaction\Command\Quit;

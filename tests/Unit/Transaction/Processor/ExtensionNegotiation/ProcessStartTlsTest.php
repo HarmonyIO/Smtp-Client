@@ -5,12 +5,12 @@ namespace HarmonyIO\SmtpClientTest\Unit\Transaction\Processor\ExtensionNegotiati
 use Amp\Socket\ClientSocket;
 use Amp\Success;
 use HarmonyIO\PHPUnitExtension\TestCase;
-use HarmonyIO\SmtpClient\Buffer;
+use HarmonyIO\SmtpClient\Connection\Buffer;
+use HarmonyIO\SmtpClient\Connection\SmtpSocket;
+use HarmonyIO\SmtpClient\Connection\Socket;
 use HarmonyIO\SmtpClient\Exception\Smtp\CouldNotUpgradeConnection;
 use HarmonyIO\SmtpClient\Log\Level;
 use HarmonyIO\SmtpClient\Log\Output;
-use HarmonyIO\SmtpClient\SmtpSocket;
-use HarmonyIO\SmtpClient\Socket;
 use HarmonyIO\SmtpClient\Transaction\Processor\ExtensionNegotiation\ProcessStartTls;
 use HarmonyIO\SmtpClient\Transaction\Reply\Factory;
 use HarmonyIO\SmtpClient\Transaction\Status\ExtensionNegotiation as Status;
