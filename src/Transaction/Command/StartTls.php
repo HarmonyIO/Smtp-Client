@@ -2,7 +2,7 @@
 
 namespace HarmonyIO\SmtpClient\Transaction\Command;
 
-class StartTls extends BaseCommand
+class StartTls extends Command
 {
     public function __construct()
     {

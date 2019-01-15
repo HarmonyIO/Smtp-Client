@@ -4,7 +4,7 @@ namespace HarmonyIO\SmtpClient;
 
 use Amp\Promise;
 use Amp\Socket\ClientTlsContext;
-use HarmonyIO\SmtpClient\Transaction\Command\BaseCommand;
+use HarmonyIO\SmtpClient\Transaction\Command\Command;
 
 interface SmtpSocket
 {
@@ -16,7 +16,7 @@ interface SmtpSocket
     /**
      * @return Promise<null>
      */
-    public function write(BaseCommand $command): Promise;
+    public function write(Command $command): Promise;
 
     public function enableCrypto(?ClientTlsContext $tlsContext = null): Promise;
 }

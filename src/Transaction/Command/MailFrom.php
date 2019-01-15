@@ -4,7 +4,7 @@ namespace HarmonyIO\SmtpClient\Transaction\Command;
 
 use HarmonyIO\SmtpClient\Envelop\Address;
 
-final class MailFrom extends BaseCommand
+final class MailFrom extends Command
 {
     public function __construct(Address $address)
     {

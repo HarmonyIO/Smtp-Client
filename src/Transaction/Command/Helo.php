@@ -4,7 +4,7 @@ namespace HarmonyIO\SmtpClient\Transaction\Command;
 
 use HarmonyIO\SmtpClient\ClientAddress\Address;
 
-class Helo extends BaseCommand
+class Helo extends Command
 {
     public function __construct(Address $clientAddress)
     {

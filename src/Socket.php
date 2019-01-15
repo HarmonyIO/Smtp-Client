@@ -7,7 +7,7 @@ use Amp\Socket\ClientSocket;
 use Amp\Socket\ClientTlsContext;
 use Amp\Socket\Socket as SocketConnection;
 use HarmonyIO\SmtpClient\Log\Output;
-use HarmonyIO\SmtpClient\Transaction\Command\BaseCommand;
+use HarmonyIO\SmtpClient\Transaction\Command\Command;
 
 final class Socket implements SmtpSocket
 {
@@ -34,7 +34,7 @@ final class Socket implements SmtpSocket
     /**
      * @return Promise<null>
      */
-    public function write(BaseCommand $command): Promise
+    public function write(Command $command): Promise
     {
         $this->logger->smtpOut((string) $command);
 

@@ -2,7 +2,7 @@
 
 namespace HarmonyIO\SmtpClient\Transaction\Command;
 
-class AuthCramMd5Start extends BaseCommand
+class AuthCramMd5Start extends Command
 {
     public function __construct()
     {

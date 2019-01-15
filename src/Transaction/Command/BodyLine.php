@@ -2,7 +2,7 @@
 
 namespace HarmonyIO\SmtpClient\Transaction\Command;
 
-class BodyLine extends BaseCommand
+class BodyLine extends Command
 {
     public function __construct(string $line)
     {

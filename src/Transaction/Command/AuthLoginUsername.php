@@ -4,7 +4,7 @@ namespace HarmonyIO\SmtpClient\Transaction\Command;
 
 use HarmonyIO\SmtpClient\Authentication;
 
-class AuthLoginUsername extends BaseCommand
+class AuthLoginUsername extends Command
 {
     public function __construct(Authentication $authentication)
     {

@@ -2,7 +2,7 @@
 
 namespace HarmonyIO\SmtpClient\Transaction\Command;
 
-class Quit extends BaseCommand
+class Quit extends Command
 {
     public function __construct()
     {

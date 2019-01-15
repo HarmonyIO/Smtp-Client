@@ -2,7 +2,7 @@
 
 namespace HarmonyIO\SmtpClient\Transaction\Command;
 
-final class Data extends BaseCommand
+final class Data extends Command
 {
     public function __construct()
     {
