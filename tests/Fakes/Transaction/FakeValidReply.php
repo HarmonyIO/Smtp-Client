@@ -2,9 +2,9 @@
 
 namespace HarmonyIO\SmtpClientTest\Fakes\Transaction;
 
-use HarmonyIO\SmtpClient\Transaction\Reply\BaseReply;
+use HarmonyIO\SmtpClient\Transaction\Reply\Reply;
 
-class FakeValidReply extends BaseReply
+class FakeValidReply extends Reply
 {
     // phpcs:ignore SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
     public static function isValid(string $line): bool

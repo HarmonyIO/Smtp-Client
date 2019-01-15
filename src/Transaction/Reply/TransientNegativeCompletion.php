@@ -2,7 +2,7 @@
 
 namespace HarmonyIO\SmtpClient\Transaction\Reply;
 
-class TransientNegativeCompletion extends BaseReply
+class TransientNegativeCompletion extends Reply
 {
     public static function isValid(string $line): bool
     {
