@@ -67,7 +67,7 @@ class ProcessStartTls implements Processor
     {
         $this->currentStatus = new Status(Status::STARTING_TLS);
 
-        return $this->connection->write((string) new StartTls());
+        return $this->connection->write(new StartTls());
     }
 
     private function processReply(Reply $reply): Promise

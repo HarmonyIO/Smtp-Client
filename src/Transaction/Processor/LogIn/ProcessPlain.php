@@ -73,7 +73,7 @@ class ProcessPlain implements Processor
     {
         $this->currentStatus = new Status(Status::SENT_PLAIN);
 
-        $this->connection->write((string) new AuthPlain($this->authentication));
+        $this->connection->write(new AuthPlain($this->authentication));
 
         return new Success();
     }

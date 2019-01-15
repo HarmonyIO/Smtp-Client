@@ -73,7 +73,7 @@ class ProcessMailFrom implements Processor
     {
         $this->currentStatus = new Status(Status::SENT_MAIL_FROM);
 
-        return $this->connection->write((string) new MailFrom($this->fromAddress));
+        return $this->connection->write(new MailFrom($this->fromAddress));
     }
 
     private function processReply(Reply $reply): Promise
@@ -97,8 +97,8 @@ class ProcessMailFrom implements Processor
 
     private function processMailFromNotAccepted(Reply $reply): Promise
     {
-        $this->connection->write((string) new Quit());
+        $this->connection->write(new Quit());
 
-        throw new InvalidMailFromAddress((string) $reply->getText());
+        throw new InvalidMailFromAddress($reply->getText());
     }
 }

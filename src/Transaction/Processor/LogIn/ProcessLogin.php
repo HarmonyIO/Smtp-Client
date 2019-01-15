@@ -78,7 +78,7 @@ class ProcessLogin implements Processor
     {
         $this->currentStatus = new Status(Status::SENT_LOGIN);
 
-        $this->connection->write((string) new AuthLoginStart());
+        $this->connection->write(new AuthLoginStart());
 
         return new Success();
     }
@@ -123,12 +123,12 @@ class ProcessLogin implements Processor
 
     private function processActiveLoginSendUsername(): Promise
     {
-        return $this->connection->write((string) new AuthLoginUsername($this->authentication));
+        return $this->connection->write(new AuthLoginUsername($this->authentication));
     }
 
     private function processActiveLoginSendPassword(): Promise
     {
-        return $this->connection->write((string) new AuthLoginPassword($this->authentication));
+        return $this->connection->write(new AuthLoginPassword($this->authentication));
     }
 
     public function processUnknownError(): Promise

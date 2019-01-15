@@ -7,6 +7,7 @@ use Amp\Socket\ClientSocket;
 use Amp\Socket\ClientTlsContext;
 use Amp\Socket\Socket as SocketConnection;
 use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Transaction\Command\BaseCommand;
 
 final class Socket implements SmtpSocket
 {
@@ -33,21 +34,11 @@ final class Socket implements SmtpSocket
     /**
      * @return Promise<null>
      */
-    public function write(string $data): Promise
+    public function write(BaseCommand $command): Promise
     {
-        $this->logger->smtpOut($data);
+        $this->logger->smtpOut((string) $command);
 
-        return $this->socket->write($data);
-    }
-
-    /**
-     * @return Promise<null>
-     */
-    public function end(string $data = ''): Promise
-    {
-        $this->logger->smtpOut($data);
-
-        return $this->socket->end($data);
+        return $this->socket->write((string) $command);
     }
 
     public function enableCrypto(?ClientTlsContext $tlsContext = null): Promise

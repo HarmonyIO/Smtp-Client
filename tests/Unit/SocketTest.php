@@ -9,6 +9,7 @@ use HarmonyIO\PHPUnitExtension\TestCase;
 use HarmonyIO\SmtpClient\Log\Level;
 use HarmonyIO\SmtpClient\Log\Output;
 use HarmonyIO\SmtpClient\Socket;
+use HarmonyIO\SmtpClient\Transaction\Command\Quit;
 use PHPUnit\Framework\MockObject\MockObject;
 use function Amp\Promise\wait;
 
@@ -44,30 +45,13 @@ class SocketTest extends TestCase
             ->expects($this->once())
             ->method('write')
             ->willReturnCallback(function (string $data) {
-                $this->assertSame('TheData', $data);
+                $this->assertSame("QUIT\r\n", $data);
 
                 return new Success();
             })
         ;
 
-        wait((new Socket($output, $this->socket))->write('TheData'));
-    }
-
-    public function testEndWritesToSocket(): void
-    {
-        $output = new Output(new Level(Level::NONE));
-
-        $this->socket
-            ->expects($this->once())
-            ->method('end')
-            ->willReturnCallback(function (string $data) {
-                $this->assertSame('TheData', $data);
-
-                return new Success();
-            })
-        ;
-
-        wait((new Socket($output, $this->socket))->end('TheData'));
+        wait((new Socket($output, $this->socket))->write(new Quit()));
     }
 
     public function testEnableCrypto(): void

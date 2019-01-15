@@ -68,7 +68,7 @@ class ProcessData implements Processor
     {
         $this->currentStatus = new Status(Status::SENT_DATA);
 
-        return $this->connection->write((string) new Data());
+        return $this->connection->write(new Data());
     }
 
     private function processReply(Reply $reply): Promise
@@ -92,7 +92,7 @@ class ProcessData implements Processor
 
     private function processDataCommandNotAccepted(Reply $reply): Promise
     {
-        $this->connection->write((string) new Quit());
+        $this->connection->write(new Quit());
 
         throw new DataNotAccepted($reply->getText());
     }
