@@ -11,6 +11,7 @@ use HarmonyIO\SmtpClient\Transaction\Extension\Collection;
 use HarmonyIO\SmtpClient\Transaction\Processor\ExtensionNegotiation\ProcessEhlo;
 use HarmonyIO\SmtpClient\Transaction\Processor\ExtensionNegotiation\ProcessExtensions;
 use HarmonyIO\SmtpClient\Transaction\Processor\ExtensionNegotiation\ProcessHelo;
+use HarmonyIO\SmtpClient\Transaction\Processor\ExtensionNegotiation\ProcessStartTls;
 use HarmonyIO\SmtpClient\Transaction\Reply\Factory;
 use HarmonyIO\SmtpClient\Transaction\Status\ExtensionNegotiation as Status;
 use function Amp\call;
@@ -55,6 +56,7 @@ final class ExtensionNegotiation implements Processor
                 new ProcessEhlo($this->replyFactory, $this->logger, $this->connection, $this->clientAddress),
                 new ProcessHelo($this->replyFactory, $this->logger, $this->connection, $this->clientAddress),
                 new ProcessExtensions($this->replyFactory, $this->logger, $this->extensionCollection),
+                new ProcessStartTls($this->replyFactory, $this->logger, $this->connection),
             ];
 
             /** @var Processor $processor */
@@ -65,6 +67,13 @@ final class ExtensionNegotiation implements Processor
 
                 /** @var Status $status */
                 $status = yield $processor->process($buffer);
+
+                if ($status->getValue() === Status::START_TLS_PROCESS) {
+                    $this->extensionCollection->clearEnabledExtensions();
+
+                    // process the entire transaction again over the secure channel
+                    return $this->process($buffer);
+                }
 
                 if ($status->getValue() === Status::COMPLETED) {
                     return;

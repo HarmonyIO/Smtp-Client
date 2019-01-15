@@ -14,6 +14,9 @@ final class Factory implements Builder
             case 'AUTH':
                 return $this->buildAuthExtension($matches);
 
+            case 'STARTTLS':
+                return new StartTls();
+
             default:
                 return null;
         }

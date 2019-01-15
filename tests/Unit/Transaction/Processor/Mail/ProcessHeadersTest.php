@@ -2,7 +2,7 @@
 
 namespace HarmonyIO\SmtpClientTest\Unit\Transaction\Processor\Mail;
 
-use Amp\Socket\ServerSocket;
+use Amp\Socket\ClientSocket;
 use Amp\Success;
 use HarmonyIO\PHPUnitExtension\TestCase;
 use HarmonyIO\SmtpClient\Buffer;
@@ -24,7 +24,7 @@ class ProcessHeadersTest extends TestCase
     /** @var SmtpSocket|MockObject $smtpSocket */
     private $smtpSocket;
 
-    /** @var ServerSocket|MockObject $socket */
+    /** @var ClientSocket|MockObject $socket */
     private $socket;
 
     /** @var ProcessHeaders */
@@ -35,7 +35,7 @@ class ProcessHeadersTest extends TestCase
     {
         $this->logger     = new Output(new Level(Level::NONE));
         $this->smtpSocket = $this->createMock(SmtpSocket::class);
-        $this->socket     = $this->createMock(ServerSocket::class);
+        $this->socket     = $this->createMock(ClientSocket::class);
         $this->processor  = new ProcessHeaders(
             new Socket($this->logger, $this->socket),
             new Header('Foo', 'Bar'),

@@ -11,6 +11,7 @@ use HarmonyIO\SmtpClient\Log\Output;
 use HarmonyIO\SmtpClient\SmtpSocket;
 use HarmonyIO\SmtpClient\Transaction\Extension\Builder;
 use HarmonyIO\SmtpClient\Transaction\Extension\Collection;
+use HarmonyIO\SmtpClient\Transaction\Extension\StartTls;
 use HarmonyIO\SmtpClient\Transaction\Processor\ExtensionNegotiation\ProcessExtensions;
 use HarmonyIO\SmtpClient\Transaction\Reply\Factory;
 use HarmonyIO\SmtpClient\Transaction\Status\ExtensionNegotiation as Status;
@@ -127,5 +128,26 @@ class ProcessExtensionsTest extends TestCase
         $status = wait($this->processor->process(new Buffer($this->smtpSocket, $this->logger)));
 
         $this->assertSame(Status::COMPLETED, $status->getValue());
+    }
+
+    public function testProcessEnablesStartTlsExtension(): void
+    {
+        $this->smtpSocket
+            ->method('read')
+            ->willReturnOnConsecutiveCalls(
+                new Success("200-success\r\n"),
+                new Success("200 STARTTLS\r\n")
+            )
+        ;
+
+        $this->extensionFactory
+            ->method('build')
+            ->willReturn(new StartTls())
+        ;
+
+        /** @var Status $status */
+        $status = wait($this->processor->process(new Buffer($this->smtpSocket, $this->logger)));
+
+        $this->assertSame(Status::PROCESS_STARTTLS, $status->getValue());
     }
 }

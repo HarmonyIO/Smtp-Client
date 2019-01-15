@@ -3,6 +3,7 @@
 namespace HarmonyIO\SmtpClient;
 
 use Amp\Promise;
+use Amp\Socket\ClientTlsContext;
 
 interface SmtpSocket
 {
@@ -20,4 +21,6 @@ interface SmtpSocket
      * @return Promise<null>
      */
     public function end(string $data = ''): Promise;
+
+    public function enableCrypto(?ClientTlsContext $tlsContext = null): Promise;
 }

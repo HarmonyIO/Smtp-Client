@@ -17,6 +17,11 @@ final class Collection
         $this->factory = $factory;
     }
 
+    public function clearEnabledExtensions(): void
+    {
+        $this->enabledExtensions = [];
+    }
+
     public function enable(Reply $reply): void
     {
         $extension = $this->factory->build($reply->getText());

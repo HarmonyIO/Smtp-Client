@@ -3,6 +3,8 @@
 namespace HarmonyIO\SmtpClient;
 
 use Amp\Promise;
+use Amp\Socket\ClientSocket;
+use Amp\Socket\ClientTlsContext;
 use Amp\Socket\Socket as SocketConnection;
 use HarmonyIO\SmtpClient\Log\Output;
 
@@ -14,7 +16,7 @@ final class Socket implements SmtpSocket
     /** @var SocketConnection */
     private $socket;
 
-    public function __construct(Output $logger, SocketConnection $socket)
+    public function __construct(Output $logger, ClientSocket $socket)
     {
         $this->logger = $logger;
         $this->socket = $socket;
@@ -46,5 +48,10 @@ final class Socket implements SmtpSocket
         $this->logger->smtpOut($data);
 
         return $this->socket->end($data);
+    }
+
+    public function enableCrypto(?ClientTlsContext $tlsContext = null): Promise
+    {
+        return $this->socket->enableCrypto($tlsContext);
     }
 }

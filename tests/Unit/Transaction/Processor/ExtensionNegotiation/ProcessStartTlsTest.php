@@ -6,19 +6,18 @@ use Amp\Socket\ClientSocket;
 use Amp\Success;
 use HarmonyIO\PHPUnitExtension\TestCase;
 use HarmonyIO\SmtpClient\Buffer;
-use HarmonyIO\SmtpClient\ClientAddress\Localhost;
-use HarmonyIO\SmtpClient\Exception\Smtp\TransmissionChannelClosed;
+use HarmonyIO\SmtpClient\Exception\Smtp\CouldNotUpgradeConnection;
 use HarmonyIO\SmtpClient\Log\Level;
 use HarmonyIO\SmtpClient\Log\Output;
 use HarmonyIO\SmtpClient\SmtpSocket;
 use HarmonyIO\SmtpClient\Socket;
-use HarmonyIO\SmtpClient\Transaction\Processor\ExtensionNegotiation\ProcessEhlo;
+use HarmonyIO\SmtpClient\Transaction\Processor\ExtensionNegotiation\ProcessStartTls;
 use HarmonyIO\SmtpClient\Transaction\Reply\Factory;
 use HarmonyIO\SmtpClient\Transaction\Status\ExtensionNegotiation as Status;
 use PHPUnit\Framework\MockObject\MockObject;
 use function Amp\Promise\wait;
 
-class ProcessEhloTest extends TestCase
+class ProcessStartTlsTest extends TestCase
 {
     /** @var Output */
     private $logger;
@@ -29,7 +28,7 @@ class ProcessEhloTest extends TestCase
     /** @var ClientSocket|MockObject $socket */
     private $socket;
 
-    /** @var ProcessEhlo */
+    /** @var ProcessStartTls */
     private $processor;
 
     // phpcs:ignore SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
@@ -38,15 +37,14 @@ class ProcessEhloTest extends TestCase
         $this->logger     = new Output(new Level(Level::NONE));
         $this->smtpSocket = $this->createMock(SmtpSocket::class);
         $this->socket     = $this->createMock(ClientSocket::class);
-        $this->processor  = new ProcessEhlo(
+        $this->processor  = new ProcessStartTls(
             new Factory(),
             $this->logger,
-            new Socket($this->logger, $this->socket),
-            new Localhost()
+            new Socket($this->logger, $this->socket)
         );
     }
 
-    public function testProcessThrowsOnErrorReply(): void
+    public function testProcessThrowsOnTransientErrorReply(): void
     {
         $this->smtpSocket
             ->expects($this->once())
@@ -58,18 +56,18 @@ class ProcessEhloTest extends TestCase
             ->expects($this->once())
             ->method('write')
             ->willReturnCallback(function (string $data) {
-                $this->assertSame("EHLO [127.0.0.1]\r\n", $data);
+                $this->assertSame("STARTTLS\r\n", $data);
 
                 return new Success();
             })
         ;
 
-        $this->expectException(TransmissionChannelClosed::class);
+        $this->expectException(CouldNotUpgradeConnection::class);
 
         wait($this->processor->process(new Buffer($this->smtpSocket, $this->logger)));
     }
 
-    public function testProcessFallsBackToHeloWhenEhloIsNotSupported(): void
+    public function testProcessThrowsOnPermanentErrorReply(): void
     {
         $this->smtpSocket
             ->expects($this->once())
@@ -81,63 +79,44 @@ class ProcessEhloTest extends TestCase
             ->expects($this->once())
             ->method('write')
             ->willReturnCallback(function (string $data) {
-                $this->assertSame("EHLO [127.0.0.1]\r\n", $data);
+                $this->assertSame("STARTTLS\r\n", $data);
 
                 return new Success();
             })
         ;
 
-        /** @var Status $status */
-        $status = wait($this->processor->process(new Buffer($this->smtpSocket, $this->logger)));
+        $this->expectException(CouldNotUpgradeConnection::class);
 
-        $this->assertSame(Status::SEND_HELO, $status->getValue());
+        wait($this->processor->process(new Buffer($this->smtpSocket, $this->logger)));
     }
 
-    public function testProcessResultsInCompletedStatusWhenEhloIsSupportedButNoExtensionsAreAvailable(): void
+    public function testProcessResultsInProcessingExtensionsStatusWhenStartTlsIsSupported(): void
     {
         $this->smtpSocket
             ->expects($this->once())
             ->method('read')
-            ->willReturn(new Success("200 error\r\n"))
+            ->willReturn(new Success("200 success\r\n"))
         ;
 
         $this->socket
             ->expects($this->once())
             ->method('write')
             ->willReturnCallback(function (string $data) {
-                $this->assertSame("EHLO [127.0.0.1]\r\n", $data);
+                $this->assertSame("STARTTLS\r\n", $data);
 
                 return new Success();
             })
-        ;
-
-        /** @var Status $status */
-        $status = wait($this->processor->process(new Buffer($this->smtpSocket, $this->logger)));
-
-        $this->assertSame(Status::COMPLETED, $status->getValue());
-    }
-
-    public function testProcessResultsInProcessingExtensionsStatusWhenEhloIsSupported(): void
-    {
-        $this->smtpSocket
-            ->expects($this->once())
-            ->method('read')
-            ->willReturn(new Success("200-error\r\n"))
         ;
 
         $this->socket
             ->expects($this->once())
-            ->method('write')
-            ->willReturnCallback(function (string $data) {
-                $this->assertSame("EHLO [127.0.0.1]\r\n", $data);
-
-                return new Success();
-            })
+            ->method('enableCrypto')
+            ->willReturn(new Success())
         ;
 
         /** @var Status $status */
         $status = wait($this->processor->process(new Buffer($this->smtpSocket, $this->logger)));
 
-        $this->assertSame(Status::PROCESSING_EXTENSION_LIST, $status->getValue());
+        $this->assertSame(Status::START_TLS_PROCESS, $status->getValue());
     }
 }
