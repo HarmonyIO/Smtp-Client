@@ -2,7 +2,7 @@
 
 namespace HarmonyIO\SmtpClientTest\Unit\Transaction\Processor\ExtensionNegotiation;
 
-use Amp\Socket\ServerSocket;
+use Amp\Socket\ClientSocket;
 use Amp\Success;
 use HarmonyIO\PHPUnitExtension\TestCase;
 use HarmonyIO\SmtpClient\Buffer;
@@ -26,7 +26,7 @@ class ProcessHeloTest extends TestCase
     /** @var SmtpSocket|MockObject $smtpSocket */
     private $smtpSocket;
 
-    /** @var ServerSocket|MockObject $socket */
+    /** @var ClientSocket|MockObject $socket */
     private $socket;
 
     /** @var ProcessHelo */
@@ -37,7 +37,7 @@ class ProcessHeloTest extends TestCase
     {
         $this->logger     = new Output(new Level(Level::NONE));
         $this->smtpSocket = $this->createMock(SmtpSocket::class);
-        $this->socket     = $this->createMock(ServerSocket::class);
+        $this->socket     = $this->createMock(ClientSocket::class);
         $this->processor  = new ProcessHelo(
             new Factory(),
             $this->logger,

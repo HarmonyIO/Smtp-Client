@@ -2,7 +2,7 @@
 
 namespace HarmonyIO\SmtpClientTest\Unit\Transaction\Processor;
 
-use Amp\Socket\Socket as ServerSocket;
+use Amp\Socket\ClientSocket;
 use Amp\Success;
 use HarmonyIO\PHPUnitExtension\TestCase;
 use HarmonyIO\SmtpClient\Buffer;
@@ -13,6 +13,7 @@ use HarmonyIO\SmtpClient\SmtpSocket;
 use HarmonyIO\SmtpClient\Socket;
 use HarmonyIO\SmtpClient\Transaction\Extension\Builder;
 use HarmonyIO\SmtpClient\Transaction\Extension\Collection;
+use HarmonyIO\SmtpClient\Transaction\Extension\StartTls;
 use HarmonyIO\SmtpClient\Transaction\Processor\ExtensionNegotiation;
 use HarmonyIO\SmtpClient\Transaction\Reply\Factory;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -25,7 +26,7 @@ class ExtensionNegotiationTest extends TestCase
     /** @var SmtpSocket|MockObject $smtpSocket */
     private $smtpSocket;
 
-    /** @var ServerSocket|MockObject $socket */
+    /** @var ClientSocket|MockObject $socket */
     private $socket;
 
     /** @var Builder|MockObject $socket */
@@ -39,7 +40,7 @@ class ExtensionNegotiationTest extends TestCase
     {
         $this->logger           = new Output(new Level(Level::NONE));
         $this->smtpSocket       = $this->createMock(SmtpSocket::class);
-        $this->socket           = $this->createMock(ServerSocket::class);
+        $this->socket           = $this->createMock(ClientSocket::class);
         $this->extensionFactory = $this->createMock(Builder::class);
         $this->processor        = new ExtensionNegotiation(
             new Factory(),
@@ -56,7 +57,7 @@ class ExtensionNegotiationTest extends TestCase
             ->method('read')
             ->willReturnOnConsecutiveCalls(
                 new Success("500 error\r\n"),
-                new Success("200 error\r\n")
+                new Success("200 success\r\n")
             )
         ;
 
@@ -67,7 +68,7 @@ class ExtensionNegotiationTest extends TestCase
     {
         $this->smtpSocket
             ->method('read')
-            ->willReturn(new Success("200 error\r\n"))
+            ->willReturn(new Success("200 success\r\n"))
         ;
 
         $this->assertNull($this->processor->process(new Buffer($this->smtpSocket, $this->logger)));
@@ -78,10 +79,40 @@ class ExtensionNegotiationTest extends TestCase
         $this->smtpSocket
             ->method('read')
             ->willReturnOnConsecutiveCalls(
-                new Success("200-error\r\n"),
-                new Success("200-error\r\n"),
-                new Success("200 error\r\n")
+                new Success("200-success\r\n"),
+                new Success("200-success\r\n"),
+                new Success("200 success\r\n")
             )
+        ;
+
+        $this->assertNull($this->processor->process(new Buffer($this->smtpSocket, $this->logger)));
+    }
+
+    public function testProcessProcessesEntireExtensionNegotiationWhenStartTlsIsAvailable(): void
+    {
+        $this->smtpSocket
+            ->method('read')
+            ->willReturnOnConsecutiveCalls(
+                new Success("200-success\r\n"),
+                new Success("200 STARTTLS\r\n"),
+                new Success("200 success\r\n"),
+                new Success("200 success\r\n")
+            )
+        ;
+
+        $this->extensionFactory
+            ->method('build')
+            ->willReturn(new StartTls())
+        ;
+
+        $this->socket
+            ->method('write')
+            ->willReturn(new Success())
+        ;
+
+        $this->socket
+            ->method('enableCrypto')
+            ->willReturn(new Success())
         ;
 
         $this->assertNull($this->processor->process(new Buffer($this->smtpSocket, $this->logger)));

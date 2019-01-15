@@ -43,6 +43,30 @@ class CollectionTest extends TestCase
         $this->assertTrue($collection->isExtensionEnabled(\stdClass::class));
     }
 
+    public function testClearEnabledExtensionsResetsTheExtensions(): void
+    {
+        $this->factory
+            ->expects($this->once())
+            ->method('build')
+            ->willReturn(new \stdClass())
+        ;
+
+        $this->reply
+            ->method('getText')
+            ->willReturn('EXTENSION')
+        ;
+
+        $collection = new Collection($this->factory);
+
+        $collection->enable($this->reply);
+
+        $this->assertTrue($collection->isExtensionEnabled(\stdClass::class));
+
+        $collection->clearEnabledExtensions();
+
+        $this->assertFalse($collection->isExtensionEnabled(\stdClass::class));
+    }
+
     public function testEnableIgnoresExtensionWhenNotSupported(): void
     {
         $this->factory

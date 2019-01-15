@@ -2,7 +2,8 @@
 
 namespace HarmonyIO\SmtpClientTest\Unit;
 
-use Amp\Socket\Socket as ServerSocket;
+use Amp\Socket\ClientSocket;
+use Amp\Socket\ClientTlsContext;
 use Amp\Success;
 use HarmonyIO\PHPUnitExtension\TestCase;
 use HarmonyIO\SmtpClient\Log\Level;
@@ -13,13 +14,13 @@ use function Amp\Promise\wait;
 
 class SocketTest extends TestCase
 {
-    /** @var ServerSocket|MockObject */
+    /** @var ClientSocket|MockObject */
     private $socket;
 
     // phpcs:ignore SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
     public function setUp()
     {
-        $this->socket = $this->createMock(ServerSocket::class);
+        $this->socket = $this->createMock(ClientSocket::class);
     }
 
     public function testReadReturnsSocketData(): void
@@ -67,5 +68,22 @@ class SocketTest extends TestCase
         ;
 
         wait((new Socket($output, $this->socket))->end('TheData'));
+    }
+
+    public function testEnableCrypto(): void
+    {
+        $output = new Output(new Level(Level::NONE));
+
+        $this->socket
+            ->expects($this->once())
+            ->method('enableCrypto')
+            ->willReturnCallback(function (ClientTlsContext $tlsContext) {
+                $this->assertInstanceOf(ClientTlsContext::class, $tlsContext);
+
+                return new Success();
+            })
+        ;
+
+        wait((new Socket($output, $this->socket))->enableCrypto(new ClientTlsContext()));
     }
 }

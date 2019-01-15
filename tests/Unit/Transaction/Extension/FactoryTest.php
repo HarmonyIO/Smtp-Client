@@ -5,6 +5,7 @@ namespace HarmonyIO\SmtpClientTest\Unit\Transaction\Extension;
 use HarmonyIO\PHPUnitExtension\TestCase;
 use HarmonyIO\SmtpClient\Transaction\Extension\Auth;
 use HarmonyIO\SmtpClient\Transaction\Extension\Factory;
+use HarmonyIO\SmtpClient\Transaction\Extension\StartTls;
 
 class FactoryTest extends TestCase
 {
@@ -29,5 +30,10 @@ class FactoryTest extends TestCase
         $auth = (new Factory())->build('AUTH LOGIN');
 
         $this->assertSame('LOGIN', $auth->getPreferredAuthenticationMethod());
+    }
+
+    public function testBuildBuildsTheStartTlsExtension(): void
+    {
+        $this->assertInstanceOf(StartTls::class, (new Factory())->build('STARTTLS'));
     }
 }

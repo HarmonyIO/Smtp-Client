@@ -27,7 +27,7 @@ Loop::run(static function () {
     $logger = new Output(new Level(Level::ALL));
 
     $connection = yield (new Connection(
-        new ServerAddress('smtp.mailtrap.io', 25),
+        new ServerAddress('smtp.mailtrap.io', 2525),
         $logger
     ))->connect();
 
