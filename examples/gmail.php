@@ -6,7 +6,7 @@ use Amp\Loop;
 use HarmonyIO\SmtpClient\Authentication;
 use HarmonyIO\SmtpClient\Buffer;
 use HarmonyIO\SmtpClient\ClientAddress\Localhost;
-use HarmonyIO\SmtpClient\Connection\PlainConnection;
+use HarmonyIO\SmtpClient\Connection\TlsConnection;
 use HarmonyIO\SmtpClient\Envelop;
 use HarmonyIO\SmtpClient\Envelop\Address;
 use HarmonyIO\SmtpClient\Log\Level;
@@ -26,8 +26,10 @@ require_once __DIR__ . '/../vendor/autoload.php';
 Loop::run(static function () {
     $logger = new Output(new Level(Level::ALL));
 
-    $connection = yield (new PlainConnection(
-        new ServerAddress('smtp.mailtrap.io', 2525),
+    // for the currently supported authentication methods we need to enable access for less secure clients
+    // https://support.google.com/accounts/answer/6010255
+    $connection = yield (new TlsConnection(
+        new ServerAddress('smtp.gmail.com', 465),
         $logger
     ))->connect();
 
