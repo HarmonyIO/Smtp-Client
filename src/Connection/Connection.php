@@ -3,7 +3,6 @@
 namespace HarmonyIO\SmtpClient\Connection;
 
 use Amp\Promise;
-use HarmonyIO\SmtpClient\Socket; // phpcs:ignore
 
 interface Connection
 {

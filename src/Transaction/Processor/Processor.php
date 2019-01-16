@@ -3,7 +3,7 @@
 namespace HarmonyIO\SmtpClient\Transaction\Processor;
 
 use Amp\Promise;
-use HarmonyIO\SmtpClient\Buffer;
+use HarmonyIO\SmtpClient\Connection\Buffer;
 
 interface Processor
 {

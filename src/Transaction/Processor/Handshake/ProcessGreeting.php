@@ -4,8 +4,8 @@ namespace HarmonyIO\SmtpClient\Transaction\Processor\Handshake;
 
 use Amp\Promise;
 use Amp\Success;
-use HarmonyIO\SmtpClient\Buffer;
-use HarmonyIO\SmtpClient\Exception\TransactionFailed;
+use HarmonyIO\SmtpClient\Connection\Buffer;
+use HarmonyIO\SmtpClient\Exception\Smtp\TransactionFailed;
 use HarmonyIO\SmtpClient\Log\Output;
 use HarmonyIO\SmtpClient\Transaction\Processor\Processor;
 use HarmonyIO\SmtpClient\Transaction\Reply\Factory;

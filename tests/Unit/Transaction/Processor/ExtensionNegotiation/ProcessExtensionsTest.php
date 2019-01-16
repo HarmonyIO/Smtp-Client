@@ -4,11 +4,11 @@ namespace HarmonyIO\SmtpClientTest\Unit\Transaction\Processor\ExtensionNegotiati
 
 use Amp\Success;
 use HarmonyIO\PHPUnitExtension\TestCase;
-use HarmonyIO\SmtpClient\Buffer;
+use HarmonyIO\SmtpClient\Connection\Buffer;
+use HarmonyIO\SmtpClient\Connection\SmtpSocket;
 use HarmonyIO\SmtpClient\Exception\Smtp\TransmissionChannelClosed;
 use HarmonyIO\SmtpClient\Log\Level;
 use HarmonyIO\SmtpClient\Log\Output;
-use HarmonyIO\SmtpClient\SmtpSocket;
 use HarmonyIO\SmtpClient\Transaction\Extension\Builder;
 use HarmonyIO\SmtpClient\Transaction\Extension\Collection;
 use HarmonyIO\SmtpClient\Transaction\Extension\StartTls;

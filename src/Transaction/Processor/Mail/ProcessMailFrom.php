@@ -4,11 +4,11 @@ namespace HarmonyIO\SmtpClient\Transaction\Processor\Mail;
 
 use Amp\Promise;
 use Amp\Success;
-use HarmonyIO\SmtpClient\Buffer;
+use HarmonyIO\SmtpClient\Connection\Buffer;
+use HarmonyIO\SmtpClient\Connection\Socket;
 use HarmonyIO\SmtpClient\Envelop\Address;
 use HarmonyIO\SmtpClient\Exception\Smtp\InvalidMailFromAddress;
 use HarmonyIO\SmtpClient\Log\Output;
-use HarmonyIO\SmtpClient\Socket;
 use HarmonyIO\SmtpClient\Transaction\Command\MailFrom;
 use HarmonyIO\SmtpClient\Transaction\Command\Quit;
 use HarmonyIO\SmtpClient\Transaction\Processor\Processor;

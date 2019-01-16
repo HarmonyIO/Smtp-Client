@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace HarmonyIO\SmtpClientTest\Unit\Exception;
+namespace HarmonyIO\SmtpClientTest\Unit\Exception\Smtp;
 
 use HarmonyIO\PHPUnitExtension\TestCase;
-use HarmonyIO\SmtpClient\Exception\ConnectionClosedUnexpectedly;
+use HarmonyIO\SmtpClient\Exception\Smtp\ConnectionClosedUnexpectedly;
 
 class ConnectionClosedUnexpectedlyTest extends TestCase
 {

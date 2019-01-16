@@ -6,7 +6,6 @@ use Amp\Promise;
 use Amp\Socket\ClientSocket;
 use HarmonyIO\SmtpClient\Log\Output;
 use HarmonyIO\SmtpClient\ServerAddress;
-use HarmonyIO\SmtpClient\Socket;
 use function Amp\call;
 use function Amp\Socket\connect;
 

@@ -4,10 +4,10 @@ namespace HarmonyIO\SmtpClientTest\Unit;
 
 use Amp\Success;
 use HarmonyIO\PHPUnitExtension\TestCase;
-use HarmonyIO\SmtpClient\Buffer;
+use HarmonyIO\SmtpClient\Connection\Buffer;
+use HarmonyIO\SmtpClient\Connection\SmtpSocket;
 use HarmonyIO\SmtpClient\Log\Level;
 use HarmonyIO\SmtpClient\Log\Output;
-use HarmonyIO\SmtpClient\SmtpSocket;
 use HarmonyIO\SmtpClient\Transaction;
 use HarmonyIO\SmtpClient\Transaction\Processor\Processor;
 use PHPUnit\Framework\MockObject\MockObject;

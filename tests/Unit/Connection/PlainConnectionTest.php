@@ -4,9 +4,9 @@ namespace HarmonyIO\SmtpClientTest\Unit\Connection;
 
 use HarmonyIO\PHPUnitExtension\TestCase;
 use HarmonyIO\SmtpClient\Connection\PlainConnection;
+use HarmonyIO\SmtpClient\Connection\SmtpSocket;
 use HarmonyIO\SmtpClient\Log\Output;
 use HarmonyIO\SmtpClient\ServerAddress;
-use HarmonyIO\SmtpClient\SmtpSocket;
 use PHPUnit\Framework\MockObject\MockObject;
 use function Amp\Promise\wait;
 use function Amp\Socket\listen;

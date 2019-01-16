@@ -3,9 +3,9 @@
 namespace HarmonyIO\SmtpClient\Transaction\Processor\Mail;
 
 use Amp\Promise;
-use HarmonyIO\SmtpClient\Buffer;
+use HarmonyIO\SmtpClient\Connection\Buffer;
+use HarmonyIO\SmtpClient\Connection\Socket;
 use HarmonyIO\SmtpClient\Envelop\Header;
-use HarmonyIO\SmtpClient\Socket;
 use HarmonyIO\SmtpClient\Transaction\Command\Header as HeaderCommand;
 use HarmonyIO\SmtpClient\Transaction\Command\HeadersAndBodySeparator;
 use HarmonyIO\SmtpClient\Transaction\Processor\Processor;

@@ -4,10 +4,10 @@ namespace HarmonyIO\SmtpClient\Transaction\Processor\Mail;
 
 use Amp\Promise;
 use Amp\Success;
-use HarmonyIO\SmtpClient\Buffer;
+use HarmonyIO\SmtpClient\Connection\Buffer;
+use HarmonyIO\SmtpClient\Connection\Socket;
 use HarmonyIO\SmtpClient\Envelop\Address;
 use HarmonyIO\SmtpClient\Log\Output;
-use HarmonyIO\SmtpClient\Socket;
 use HarmonyIO\SmtpClient\Transaction\Command\RcptTo;
 use HarmonyIO\SmtpClient\Transaction\Processor\Processor;
 use HarmonyIO\SmtpClient\Transaction\Reply\Factory;

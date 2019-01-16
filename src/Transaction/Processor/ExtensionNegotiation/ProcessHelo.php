@@ -4,11 +4,11 @@ namespace HarmonyIO\SmtpClient\Transaction\Processor\ExtensionNegotiation;
 
 use Amp\Promise;
 use Amp\Success;
-use HarmonyIO\SmtpClient\Buffer;
 use HarmonyIO\SmtpClient\ClientAddress\Address;
+use HarmonyIO\SmtpClient\Connection\Buffer;
+use HarmonyIO\SmtpClient\Connection\Socket;
 use HarmonyIO\SmtpClient\Exception\Smtp\TransmissionChannelClosed;
 use HarmonyIO\SmtpClient\Log\Output;
-use HarmonyIO\SmtpClient\Socket;
 use HarmonyIO\SmtpClient\Transaction\Command\Helo;
 use HarmonyIO\SmtpClient\Transaction\Processor\Processor;
 use HarmonyIO\SmtpClient\Transaction\Reply\Factory;
