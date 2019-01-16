@@ -4,8 +4,8 @@ namespace HarmonyIO\SmtpClient\Examples;
 
 use Amp\Loop;
 use HarmonyIO\SmtpClient\Authentication;
-use HarmonyIO\SmtpClient\Buffer;
 use HarmonyIO\SmtpClient\ClientAddress\Localhost;
+use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Connection\TlsConnection;
 use HarmonyIO\SmtpClient\Envelop;
 use HarmonyIO\SmtpClient\Envelop\Address;
