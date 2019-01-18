@@ -9,7 +9,7 @@ use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Connection\Socket;
 use HarmonyIO\SmtpClient\Exception\Smtp\InvalidCredentials;
 use HarmonyIO\SmtpClient\Exception\Smtp\TransmissionChannelClosed;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\Transaction\Command\AuthCramMd5Response;
 use HarmonyIO\SmtpClient\Transaction\Command\AuthCramMd5Start;
 use HarmonyIO\SmtpClient\Transaction\Processor\Processor;
@@ -43,7 +43,7 @@ class ProcessCramMd5 implements Processor
     /** @var Factory */
     private $replyFactory;
 
-    /** @var Output */
+    /** @var Logger */
     private $logger;
 
     /** @var Socket */
@@ -52,7 +52,7 @@ class ProcessCramMd5 implements Processor
     /** @var Authentication */
     private $authentication;
 
-    public function __construct(Factory $replyFactory, Output $logger, Socket $connection, Authentication $authentication)
+    public function __construct(Factory $replyFactory, Logger $logger, Socket $connection, Authentication $authentication)
     {
         $this->replyFactory   = $replyFactory;
         $this->logger         = $logger;
@@ -139,11 +139,15 @@ class ProcessCramMd5 implements Processor
 
     public function processUnknownError(): Promise
     {
+        $this->logger->error('Unknown error has occurred while processing CRAM-MD5 login');
+
         throw new TransmissionChannelClosed();
     }
 
     private function processInvalidCredentials(): Promise
     {
+        $this->logger->error('Invalid credentials');
+
         throw new InvalidCredentials();
     }
 }

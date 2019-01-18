@@ -6,7 +6,7 @@ use Amp\Promise;
 use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Connection\Socket;
 use HarmonyIO\SmtpClient\Exception\Smtp\DataNotAccepted;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\Transaction\Command\BodyLine;
 use HarmonyIO\SmtpClient\Transaction\Command\EndData;
 use HarmonyIO\SmtpClient\Transaction\Command\Quit;
@@ -33,7 +33,7 @@ class ProcessContent implements Processor
     /** @var Factory */
     private $replyFactory;
 
-    /** @var Output */
+    /** @var Logger */
     private $logger;
 
     /** @var Socket */
@@ -42,7 +42,7 @@ class ProcessContent implements Processor
     /** @var string */
     private $body;
 
-    public function __construct(Factory $replyFactory, Output $logger, Socket $connection, string $body)
+    public function __construct(Factory $replyFactory, Logger $logger, Socket $connection, string $body)
     {
         $this->replyFactory = $replyFactory;
         $this->logger       = $logger;

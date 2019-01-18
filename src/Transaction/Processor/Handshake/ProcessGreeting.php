@@ -6,7 +6,7 @@ use Amp\Promise;
 use Amp\Success;
 use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Exception\Smtp\TransactionFailed;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\Transaction\Processor\Processor;
 use HarmonyIO\SmtpClient\Transaction\Reply\Factory;
 use HarmonyIO\SmtpClient\Transaction\Reply\PositiveCompletion;
@@ -28,10 +28,10 @@ class ProcessGreeting implements Processor
     /** @var Factory */
     private $replyFactory;
 
-    /** @var Output */
+    /** @var Logger */
     private $logger;
 
-    public function __construct(Factory $replyFactory, Output $logger)
+    public function __construct(Factory $replyFactory, Logger $logger)
     {
         $this->currentStatus = new Status(Status::PROCESS_GREETING);
 
@@ -79,6 +79,8 @@ class ProcessGreeting implements Processor
 
     private function failTransaction(Reply $reply): Promise
     {
+        $this->logger->error('Could not process SMTP greeting');
+
         throw new TransactionFailed((string) $reply->getText());
     }
 

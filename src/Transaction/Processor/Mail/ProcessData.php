@@ -7,7 +7,7 @@ use Amp\Success;
 use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Connection\Socket;
 use HarmonyIO\SmtpClient\Exception\Smtp\DataNotAccepted;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\Transaction\Command\Data;
 use HarmonyIO\SmtpClient\Transaction\Command\Quit;
 use HarmonyIO\SmtpClient\Transaction\Processor\Processor;
@@ -33,13 +33,13 @@ class ProcessData implements Processor
     /** @var Factory */
     private $replyFactory;
 
-    /** @var Output */
+    /** @var Logger */
     private $logger;
 
     /** @var Socket */
     private $connection;
 
-    public function __construct(Factory $replyFactory, Output $logger, Socket $connection)
+    public function __construct(Factory $replyFactory, Logger $logger, Socket $connection)
     {
         $this->replyFactory = $replyFactory;
         $this->logger       = $logger;

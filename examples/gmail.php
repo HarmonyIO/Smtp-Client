@@ -9,8 +9,7 @@ use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Connection\TlsConnection;
 use HarmonyIO\SmtpClient\Envelop;
 use HarmonyIO\SmtpClient\Envelop\Address;
-use HarmonyIO\SmtpClient\Log\Level;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Builder as LogBuilder;
 use HarmonyIO\SmtpClient\ServerAddress;
 use HarmonyIO\SmtpClient\Transaction;
 use HarmonyIO\SmtpClient\Transaction\Extension\Collection;
@@ -24,7 +23,7 @@ use HarmonyIO\SmtpClient\Transaction\Reply\Factory as ReplyFactory;
 require_once __DIR__ . '/../vendor/autoload.php';
 
 Loop::run(static function () {
-    $logger = new Output(new Level(Level::ALL));
+    $logger = LogBuilder::buildConsoleLogger();
 
     // for the currently supported authentication methods we need to enable access for less secure clients
     // https://support.google.com/accounts/answer/6010255

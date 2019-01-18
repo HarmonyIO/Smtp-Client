@@ -6,7 +6,7 @@ use Amp\Promise;
 use HarmonyIO\SmtpClient\Authentication;
 use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Connection\Socket;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\Transaction\Extension\Auth;
 use HarmonyIO\SmtpClient\Transaction\Extension\Collection;
 use HarmonyIO\SmtpClient\Transaction\Processor\LogIn\ProcessCramMd5;
@@ -20,7 +20,7 @@ final class LogIn implements Processor
     /** @var Factory */
     private $replyFactory;
 
-    /** @var Output */
+    /** @var Logger */
     private $logger;
 
     /** @var Socket */
@@ -34,7 +34,7 @@ final class LogIn implements Processor
 
     public function __construct(
         Factory $replyFactory,
-        Output $logger,
+        Logger $logger,
         Socket $connection,
         Collection $extensions,
         ?Authentication $authentication = null

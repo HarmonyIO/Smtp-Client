@@ -4,7 +4,7 @@ namespace HarmonyIO\SmtpClient\Connection;
 
 use Amp\Promise;
 use HarmonyIO\SmtpClient\Exception\Smtp\ConnectionClosedUnexpectedly;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Logger;
 use function Amp\call;
 
 final class Buffer
@@ -22,10 +22,10 @@ final class Buffer
     /** @var Socket */
     private $socket;
 
-    /** @var Output */
+    /** @var Logger */
     private $logger;
 
-    public function __construct(SmtpSocket $socket, Output $logger)
+    public function __construct(SmtpSocket $socket, Logger $logger)
     {
         $this->socket = $socket;
         $this->logger = $logger;
@@ -44,6 +44,8 @@ final class Buffer
             }
 
             if (!$this->doesBufferContainLine() && !$this->socketAlive) {
+                $this->logger->error('Server closed the connection unexpectedly');
+
                 throw new ConnectionClosedUnexpectedly();
             }
 
@@ -92,7 +94,7 @@ final class Buffer
                 return null;
             }
 
-            $this->logger->messageIn($chunk);
+            $this->logger->smtpIn($chunk);
 
             return $chunk;
         });
@@ -106,7 +108,7 @@ final class Buffer
         $this->buffer = substr($this->buffer, $lineDelimiterPosition + strlen(self::LINE_DELIMITER));
 
         if (strlen($line) > self::LINE_LENGTH_LIMIT) {
-            $this->logger->info('Line exceeds RFC SMTP line length. We process it anyway,', [
+            $this->logger->warning('Line exceeds RFC SMTP line length. We process it anyway,', [
                 'line' => $line,
             ]);
         }

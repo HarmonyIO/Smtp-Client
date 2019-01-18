@@ -5,7 +5,7 @@ namespace HarmonyIO\SmtpClient\Connection;
 use Amp\Promise;
 use Amp\Socket\ClientSocket;
 use Amp\Socket\ClientTlsContext;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\ServerAddress;
 use function Amp\call;
 use function Amp\Socket\cryptoConnect;
@@ -15,10 +15,10 @@ final class TlsConnection implements Connection
     /** @var ServerAddress */
     private $serverAddress;
 
-    /** @var Output */
+    /** @var Logger */
     private $logger;
 
-    public function __construct(ServerAddress $serverAddress, Output $logger)
+    public function __construct(ServerAddress $serverAddress, Logger $logger)
     {
         $this->serverAddress  = $serverAddress;
         $this->logger         = $logger;

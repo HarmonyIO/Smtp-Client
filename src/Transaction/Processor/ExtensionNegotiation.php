@@ -6,7 +6,7 @@ use Amp\Promise;
 use HarmonyIO\SmtpClient\ClientAddress\Address;
 use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Connection\Socket;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\Transaction\Extension\Collection;
 use HarmonyIO\SmtpClient\Transaction\Processor\ExtensionNegotiation\ProcessEhlo;
 use HarmonyIO\SmtpClient\Transaction\Processor\ExtensionNegotiation\ProcessExtensions;
@@ -21,7 +21,7 @@ final class ExtensionNegotiation implements Processor
     /** @var Factory */
     private $replyFactory;
 
-    /** @var Output */
+    /** @var Logger */
     private $logger;
 
     /** @var Socket */
@@ -35,7 +35,7 @@ final class ExtensionNegotiation implements Processor
 
     public function __construct(
         Factory $replyFactory,
-        Output $logger,
+        Logger $logger,
         Socket $connection,
         Address $clientAddress,
         Collection $extensionCollection

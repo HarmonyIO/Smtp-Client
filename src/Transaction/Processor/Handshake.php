@@ -4,7 +4,7 @@ namespace HarmonyIO\SmtpClient\Transaction\Processor;
 
 use Amp\Promise;
 use HarmonyIO\SmtpClient\Connection\Buffer;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\Transaction\Processor\Handshake\ProcessBanner;
 use HarmonyIO\SmtpClient\Transaction\Processor\Handshake\ProcessGreeting;
 use HarmonyIO\SmtpClient\Transaction\Reply\Factory;
@@ -16,10 +16,10 @@ final class Handshake implements Processor
     /** @var Factory */
     private $replyFactory;
 
-    /** @var Output */
+    /** @var Logger */
     private $logger;
 
-    public function __construct(Factory $replyFactory, Output $logger)
+    public function __construct(Factory $replyFactory, Logger $logger)
     {
         $this->replyFactory = $replyFactory;
         $this->logger       = $logger;

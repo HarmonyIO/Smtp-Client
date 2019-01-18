@@ -6,18 +6,18 @@ use Amp\Promise;
 use Amp\Socket\ClientSocket;
 use Amp\Socket\ClientTlsContext;
 use Amp\Socket\Socket as SocketConnection;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\Transaction\Command\Command;
 
 final class Socket implements SmtpSocket
 {
-    /** @var Output */
+    /** @var Logger */
     private $logger;
 
     /** @var SocketConnection */
     private $socket;
 
-    public function __construct(Output $logger, ClientSocket $socket)
+    public function __construct(Logger $logger, ClientSocket $socket)
     {
         $this->logger = $logger;
         $this->socket = $socket;

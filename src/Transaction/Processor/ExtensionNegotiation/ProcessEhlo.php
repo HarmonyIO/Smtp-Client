@@ -8,7 +8,7 @@ use HarmonyIO\SmtpClient\ClientAddress\Address;
 use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Connection\Socket;
 use HarmonyIO\SmtpClient\Exception\Smtp\TransmissionChannelClosed;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\Transaction\Command\Ehlo;
 use HarmonyIO\SmtpClient\Transaction\Processor\Processor;
 use HarmonyIO\SmtpClient\Transaction\Reply\Factory;
@@ -33,7 +33,7 @@ class ProcessEhlo implements Processor
     /** @var Factory */
     private $replyFactory;
 
-    /** @var Output */
+    /** @var Logger */
     private $logger;
 
     /** @var Socket */
@@ -42,7 +42,7 @@ class ProcessEhlo implements Processor
     /** @var Address */
     private $clientAddress;
 
-    public function __construct(Factory $replyFactory, Output $logger, Socket $connection, Address $clientAddress)
+    public function __construct(Factory $replyFactory, Logger $logger, Socket $connection, Address $clientAddress)
     {
         $this->replyFactory  = $replyFactory;
         $this->logger        = $logger;
@@ -106,6 +106,8 @@ class ProcessEhlo implements Processor
 
     private function processClosingConnection(): Promise
     {
+        $this->logger->error('Could not process EHLO response');
+
         throw new TransmissionChannelClosed();
     }
 

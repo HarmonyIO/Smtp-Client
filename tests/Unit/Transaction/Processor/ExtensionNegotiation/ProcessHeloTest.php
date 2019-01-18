@@ -10,17 +10,18 @@ use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Connection\SmtpSocket;
 use HarmonyIO\SmtpClient\Connection\Socket;
 use HarmonyIO\SmtpClient\Exception\Smtp\TransmissionChannelClosed;
-use HarmonyIO\SmtpClient\Log\Level;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\Transaction\Processor\ExtensionNegotiation\ProcessHelo;
 use HarmonyIO\SmtpClient\Transaction\Reply\Factory;
 use HarmonyIO\SmtpClient\Transaction\Status\ExtensionNegotiation as Status;
+use Monolog\Handler\AbstractProcessingHandler;
+use Monolog\Logger as MonoLogger;
 use PHPUnit\Framework\MockObject\MockObject;
 use function Amp\Promise\wait;
 
 class ProcessHeloTest extends TestCase
 {
-    /** @var Output */
+    /** @var Logger */
     private $logger;
 
     /** @var SmtpSocket|MockObject $smtpSocket */
@@ -35,7 +36,12 @@ class ProcessHeloTest extends TestCase
     // phpcs:ignore SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
     public function setUp()
     {
-        $this->logger     = new Output(new Level(Level::NONE));
+        $this->logger = new Logger(
+            new MonoLogger('SMTP_IN', [$this->createMock(AbstractProcessingHandler::class)]),
+            new MonoLogger('SMTP_OUT', [$this->createMock(AbstractProcessingHandler::class)]),
+            new MonoLogger('GENERAL', [$this->createMock(AbstractProcessingHandler::class)])
+        );
+
         $this->smtpSocket = $this->createMock(SmtpSocket::class);
         $this->socket     = $this->createMock(ClientSocket::class);
         $this->processor  = new ProcessHelo(

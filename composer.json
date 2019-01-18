@@ -17,6 +17,7 @@
         "ext-hash": "*",
         "ext-json": "*",
         "amphp/amp": "^2.1.1",
+        "amphp/log": "^1.0.0",
         "amphp/socket": "^0.10.11"
     },
     "require-dev": {

@@ -6,7 +6,7 @@ use Amp\Promise;
 use Amp\Success;
 use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Exception\Smtp\TransmissionChannelClosed;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\Transaction\Extension\Collection;
 use HarmonyIO\SmtpClient\Transaction\Extension\StartTls;
 use HarmonyIO\SmtpClient\Transaction\Processor\Processor;
@@ -32,13 +32,13 @@ class ProcessExtensions implements Processor
     /** @var Factory */
     private $replyFactory;
 
-    /** @var Output */
+    /** @var Logger */
     private $logger;
 
     /** @var Collection */
     private $extensions;
 
-    public function __construct(Factory $replyFactory, Output $logger, Collection $extensions)
+    public function __construct(Factory $replyFactory, Logger $logger, Collection $extensions)
     {
         $this->currentStatus = new Status(Status::PROCESSING_EXTENSION_LIST);
 
@@ -96,6 +96,8 @@ class ProcessExtensions implements Processor
 
     private function processClosingConnection(): Promise
     {
+        $this->logger->error('Could not process extension response');
+
         throw new TransmissionChannelClosed();
     }
 }
