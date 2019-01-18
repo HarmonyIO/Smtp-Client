@@ -6,10 +6,11 @@ use Amp\Success;
 use HarmonyIO\PHPUnitExtension\TestCase;
 use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Connection\SmtpSocket;
-use HarmonyIO\SmtpClient\Log\Level;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\Transaction;
 use HarmonyIO\SmtpClient\Transaction\Processor\Processor;
+use Monolog\Handler\AbstractProcessingHandler;
+use Monolog\Logger as MonoLogger;
 use PHPUnit\Framework\MockObject\MockObject;
 use function Amp\Promise\wait;
 
@@ -37,6 +38,12 @@ class TransactionTest extends TestCase
             ->willReturn(new Success())
         ;
 
-        wait((new Transaction(new Buffer($socket, new Output(new Level(Level::NONE)))))->run($processor1, $processor2));
+        $logger = new Logger(
+            new MonoLogger('SMTP_IN', [$this->createMock(AbstractProcessingHandler::class)]),
+            new MonoLogger('SMTP_OUT', [$this->createMock(AbstractProcessingHandler::class)]),
+            new MonoLogger('GENERAL', [$this->createMock(AbstractProcessingHandler::class)])
+        );
+
+        wait((new Transaction(new Buffer($socket, $logger)))->run($processor1, $processor2));
     }
 }

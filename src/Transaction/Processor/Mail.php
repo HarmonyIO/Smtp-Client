@@ -6,7 +6,7 @@ use Amp\Promise;
 use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Connection\Socket;
 use HarmonyIO\SmtpClient\Envelop;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\Transaction\Processor\Mail\ProcessContent;
 use HarmonyIO\SmtpClient\Transaction\Processor\Mail\ProcessData;
 use HarmonyIO\SmtpClient\Transaction\Processor\Mail\ProcessHeaders;
@@ -21,7 +21,7 @@ final class Mail implements Processor
     /** @var Factory */
     private $replyFactory;
 
-    /** @var Output */
+    /** @var Logger */
     private $logger;
 
     /** @var Socket */
@@ -32,7 +32,7 @@ final class Mail implements Processor
 
     public function __construct(
         Factory $replyFactory,
-        Output $logger,
+        Logger $logger,
         Socket $connection,
         Envelop $envelop
     ) {

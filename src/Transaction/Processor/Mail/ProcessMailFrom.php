@@ -8,7 +8,7 @@ use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Connection\Socket;
 use HarmonyIO\SmtpClient\Envelop\Address;
 use HarmonyIO\SmtpClient\Exception\Smtp\InvalidMailFromAddress;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\Transaction\Command\MailFrom;
 use HarmonyIO\SmtpClient\Transaction\Command\Quit;
 use HarmonyIO\SmtpClient\Transaction\Processor\Processor;
@@ -34,7 +34,7 @@ class ProcessMailFrom implements Processor
     /** @var Factory */
     private $replyFactory;
 
-    /** @var Output */
+    /** @var Logger */
     private $logger;
 
     /** @var Socket */
@@ -43,7 +43,7 @@ class ProcessMailFrom implements Processor
     /** @var Address */
     private $fromAddress;
 
-    public function __construct(Factory $replyFactory, Output $logger, Socket $connection, Address $fromAddress)
+    public function __construct(Factory $replyFactory, Logger $logger, Socket $connection, Address $fromAddress)
     {
         $this->replyFactory = $replyFactory;
         $this->logger       = $logger;

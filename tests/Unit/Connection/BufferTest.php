@@ -7,7 +7,9 @@ use HarmonyIO\PHPUnitExtension\TestCase;
 use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Connection\SmtpSocket;
 use HarmonyIO\SmtpClient\Exception\Smtp\ConnectionClosedUnexpectedly;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Logger;
+use Monolog\Handler\AbstractProcessingHandler;
+use Monolog\Logger as MonoLogger;
 use PHPUnit\Framework\MockObject\MockObject;
 use function Amp\Promise\wait;
 
@@ -16,14 +18,19 @@ class BufferTest extends TestCase
     /** @var SmtpSocket|MockObject */
     private $socket;
 
-    /** @var Output|MockObject */
+    /** @var Logger */
     private $logger;
 
     // phpcs:ignore SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
     public function setUp()
     {
         $this->socket = $this->createMock(SmtpSocket::class);
-        $this->logger = $this->createMock(Output::class);
+
+        $this->logger = new Logger(
+            new MonoLogger('SMTP_IN', [$this->createMock(AbstractProcessingHandler::class)]),
+            new MonoLogger('SMTP_OUT', [$this->createMock(AbstractProcessingHandler::class)]),
+            new MonoLogger('GENERAL', [$this->createMock(AbstractProcessingHandler::class)])
+        );
     }
 
     public function testReadLineReturnsNullWhenThereIsNothingMoreToReadFromTheSocketAndTheSocketIsClosedOnCall(): void
@@ -50,30 +57,6 @@ class BufferTest extends TestCase
 
         $this->expectException(ConnectionClosedUnexpectedly::class);
         $this->expectExceptionMessage('The connection closed while processing an SMTP reply.');
-
-        wait($buffer->readLine());
-    }
-
-    public function testReadLineLogsNoticeWhenLineLengthExceedsTheSmtpRfcLineLength(): void
-    {
-        $line = str_repeat('x', 513);
-
-        $this->socket
-            ->method('read')
-            ->willReturn(new Success($line . "\r\n"))
-        ;
-
-        $this->logger
-            ->expects($this->once())
-            ->method('info')
-            ->willReturnCallback(function (string $message, array $context) use ($line): void {
-                $this->assertSame('Line exceeds RFC SMTP line length. We process it anyway,', $message);
-                $this->assertArrayHasKey('line', $context);
-                $this->assertSame($line, $context['line']);
-            })
-        ;
-
-        $buffer = new Buffer($this->socket, $this->logger);
 
         wait($buffer->readLine());
     }

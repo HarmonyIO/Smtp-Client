@@ -10,26 +10,48 @@ use Amp\Socket\ServerTlsContext;
 use HarmonyIO\PHPUnitExtension\TestCase;
 use HarmonyIO\SmtpClient\Connection\SmtpSocket;
 use HarmonyIO\SmtpClient\Connection\TlsConnection;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\ServerAddress;
+use Monolog\Handler\AbstractProcessingHandler;
+use Monolog\Logger as MonoLogger;
 use PHPUnit\Framework\MockObject\MockObject;
 use function Amp\asyncCall;
 use function Amp\Socket\listen;
 
 class TlsConnectionTest extends TestCase
 {
+    /** @var AbstractProcessingHandler|MockObject $logHandler */
+    private $smtpInLogHandler;
+
+    /** @var AbstractProcessingHandler|MockObject $logHandler */
+    private $smtpOutLogHandler;
+
+    /** @var AbstractProcessingHandler|MockObject $logHandler */
+    private $generalLogHandler;
+
+    // phpcs:ignore SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
+    public function setUp()
+    {
+        $this->smtpInLogHandler  = $this->createMock(AbstractProcessingHandler::class);
+        $this->smtpOutLogHandler = $this->createMock(AbstractProcessingHandler::class);
+        $this->generalLogHandler = $this->createMock(AbstractProcessingHandler::class);
+    }
+
     public function testConnectLogs(): void
     {
         Loop::run(function (): \Generator {
-            /** @var Output|MockObject $logger */
-            $logger = $this->createMock(Output::class);
-
-            $logger
-                ->method('info')
+            $this->generalLogHandler
+                ->method('write')
                 ->willReturnCallback(function (string $message): void {
                     $this->assertSame('Opened connection to 127.0.0.1:2525', $message);
                 })
             ;
+
+            $logger = new Logger(
+                new MonoLogger('SMTP_IN', [$this->smtpInLogHandler]),
+                new MonoLogger('SMTP_OUT', [$this->smtpOutLogHandler]),
+                new MonoLogger('GENERAL', [$this->generalLogHandler])
+            );
 
             $tlsContext = (new ServerTlsContext())
                 ->withDefaultCertificate(new Certificate(TEST_DATA_DIR . '/harmony.io.pem'))
@@ -64,8 +86,11 @@ class TlsConnectionTest extends TestCase
     public function testConnectReturnsSmtpSocket(): void
     {
         Loop::run(function (): void {
-            /** @var Output|MockObject $logger */
-            $logger = $this->createMock(Output::class);
+            $logger = new Logger(
+                new MonoLogger('SMTP_IN', [$this->smtpInLogHandler]),
+                new MonoLogger('SMTP_OUT', [$this->smtpOutLogHandler]),
+                new MonoLogger('GENERAL', [$this->generalLogHandler])
+            );
 
             $tlsContext = (new ServerTlsContext())
                 ->withDefaultCertificate(new Certificate(TEST_DATA_DIR . '/harmony.io.pem'))

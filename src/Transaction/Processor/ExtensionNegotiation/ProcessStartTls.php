@@ -7,7 +7,7 @@ use Amp\Socket\ClientTlsContext;
 use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Connection\Socket;
 use HarmonyIO\SmtpClient\Exception\Smtp\CouldNotUpgradeConnection;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\Transaction\Command\StartTls;
 use HarmonyIO\SmtpClient\Transaction\Processor\Processor;
 use HarmonyIO\SmtpClient\Transaction\Reply\Factory;
@@ -32,13 +32,13 @@ class ProcessStartTls implements Processor
     /** @var Factory */
     private $replyFactory;
 
-    /** @var Output */
+    /** @var Logger */
     private $logger;
 
     /** @var Socket */
     private $connection;
 
-    public function __construct(Factory $replyFactory, Output $logger, Socket $connection)
+    public function __construct(Factory $replyFactory, Logger $logger, Socket $connection)
     {
         $this->replyFactory = $replyFactory;
         $this->logger       = $logger;
@@ -95,6 +95,8 @@ class ProcessStartTls implements Processor
 
     private function processUnsupportedStartTls(Reply $reply): Promise
     {
+        $this->logger->critical('Could not start STARTTLS');
+
         throw new CouldNotUpgradeConnection($reply->getText());
     }
 }

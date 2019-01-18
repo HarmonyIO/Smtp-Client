@@ -7,7 +7,7 @@ use Amp\Success;
 use HarmonyIO\SmtpClient\Connection\Buffer;
 use HarmonyIO\SmtpClient\Connection\Socket;
 use HarmonyIO\SmtpClient\Envelop\Address;
-use HarmonyIO\SmtpClient\Log\Output;
+use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\Transaction\Command\RcptTo;
 use HarmonyIO\SmtpClient\Transaction\Processor\Processor;
 use HarmonyIO\SmtpClient\Transaction\Reply\Factory;
@@ -32,7 +32,7 @@ class ProcessRecipients implements Processor
     /** @var Factory */
     private $replyFactory;
 
-    /** @var Output */
+    /** @var Logger */
     private $logger;
 
     /** @var Socket */
@@ -43,7 +43,7 @@ class ProcessRecipients implements Processor
 
     public function __construct(
         Factory $replyFactory,
-        Output $logger,
+        Logger $logger,
         Socket $connection,
         Address $recipient,
         Address ...$recipients
