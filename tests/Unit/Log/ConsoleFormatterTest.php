@@ -35,7 +35,7 @@ class ConsoleFormatterTest extends TestCase
             'context'    => [],
         ];
 
-        $this->assertSame('%datetime% [foobar] info: foo\r\n\0\tbar  ' . PHP_EOL, $formatter->format($record));
+        $this->assertSame('%datetime% [foobar] info: foo\r\n\0\tbar  ' . "\r\n", $formatter->format($record));
     }
 
     public function testFormatWithoutColorSupport(): void
@@ -52,7 +52,7 @@ class ConsoleFormatterTest extends TestCase
             'context'    => [],
         ];
 
-        $this->assertSame('%datetime% [foobar] info: The log message  ' . PHP_EOL, $formatter->format($record));
+        $this->assertSame('%datetime% [foobar] info: The log message  ' . "\r\n", $formatter->format($record));
     }
 
     public function testFormatInfoWithColorSupport(): void
@@ -69,7 +69,7 @@ class ConsoleFormatterTest extends TestCase
             'context'    => [],
         ];
 
-        $this->assertSame("%datetime% [\033[1mfoobar\033[0m] \033[1;35minfo\033[0m: The log message  " . PHP_EOL, $formatter->format($record));
+        $this->assertSame("%datetime% [\033[1mfoobar\033[0m] \033[1;35minfo\033[0m: The log message  \r\n", $formatter->format($record));
     }
 
     public function testFormatWarningWithColorSupport(): void
@@ -86,7 +86,7 @@ class ConsoleFormatterTest extends TestCase
             'context'    => [],
         ];
 
-        $this->assertSame("%datetime% [\033[1mfoobar\033[0m] \033[1;33mwarning\033[0m: The log message  " . PHP_EOL, $formatter->format($record));
+        $this->assertSame("%datetime% [\033[1mfoobar\033[0m] \033[1;33mwarning\033[0m: The log message  \r\n", $formatter->format($record));
     }
 
     public function testFormatNoticeWithColorSupport(): void
@@ -103,7 +103,7 @@ class ConsoleFormatterTest extends TestCase
             'context'    => [],
         ];
 
-        $this->assertSame("%datetime% [\033[1mfoobar\033[0m] \033[1;32mnotice\033[0m: The log message  " . PHP_EOL, $formatter->format($record));
+        $this->assertSame("%datetime% [\033[1mfoobar\033[0m] \033[1;32mnotice\033[0m: The log message  \r\n", $formatter->format($record));
     }
 
     public function testFormatDebugWithColorSupport(): void
@@ -120,6 +120,6 @@ class ConsoleFormatterTest extends TestCase
             'context'    => [],
         ];
 
-        $this->assertSame("%datetime% [\033[1mfoobar\033[0m] \033[1;36mdebug\033[0m: The log message  " . PHP_EOL, $formatter->format($record));
+        $this->assertSame("%datetime% [\033[1mfoobar\033[0m] \033[1;36mdebug\033[0m: The log message  \r\n", $formatter->format($record));
     }
 }
