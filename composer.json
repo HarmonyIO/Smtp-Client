@@ -17,8 +17,11 @@
         "ext-hash": "*",
         "ext-json": "*",
         "amphp/amp": "^2.1.1",
+        "amphp/byte-stream": "^1.5.1",
         "amphp/log": "^1.0.0",
-        "amphp/socket": "^0.10.11"
+        "amphp/socket": "^0.10.11",
+        "monolog/monolog": "^1.24.0",
+        "psr/log": "^1.1.0"
     },
     "require-dev": {
         "harmonyio/php-codesniffer-ruleset": "1.0.0-rc1",
