@@ -25,6 +25,8 @@ class ConsoleFormatterTest extends TestCase
 
     public function testFormatReplacesNonPrintableCharacters(): void
     {
+        putenv('AMP_LOG_COLOR=off');
+
         $formatter = new ConsoleFormatter();
 
         $record = [
