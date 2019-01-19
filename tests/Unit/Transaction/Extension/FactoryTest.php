@@ -5,6 +5,7 @@ namespace HarmonyIO\SmtpClientTest\Unit\Transaction\Extension;
 use HarmonyIO\PHPUnitExtension\TestCase;
 use HarmonyIO\SmtpClient\Transaction\Extension\Auth;
 use HarmonyIO\SmtpClient\Transaction\Extension\Factory;
+use HarmonyIO\SmtpClient\Transaction\Extension\Pipelining;
 use HarmonyIO\SmtpClient\Transaction\Extension\StartTls;
 
 class FactoryTest extends TestCase
@@ -35,5 +36,10 @@ class FactoryTest extends TestCase
     public function testBuildBuildsTheStartTlsExtension(): void
     {
         $this->assertInstanceOf(StartTls::class, (new Factory())->build('STARTTLS'));
+    }
+
+    public function testBuildBuildsThePipeLiningExtension(): void
+    {
+        $this->assertInstanceOf(Pipelining::class, (new Factory())->build('PIPELINING'));
     }
 }

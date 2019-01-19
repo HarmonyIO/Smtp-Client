@@ -11,15 +11,13 @@ use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\Transaction\Extension\Collection;
 use HarmonyIO\SmtpClient\Transaction\Extension\Pipelining;
 use HarmonyIO\SmtpClient\Transaction\Processor\Mail\ProcessContent;
-use HarmonyIO\SmtpClient\Transaction\Processor\Mail\ProcessData;
 use HarmonyIO\SmtpClient\Transaction\Processor\Mail\ProcessHeaders;
-use HarmonyIO\SmtpClient\Transaction\Processor\Mail\ProcessMailFrom;
-use HarmonyIO\SmtpClient\Transaction\Processor\Mail\ProcessRecipients;
+use HarmonyIO\SmtpClient\Transaction\Processor\Mail\ProcessPipelining;
 use HarmonyIO\SmtpClient\Transaction\Reply\Factory;
 use HarmonyIO\SmtpClient\Transaction\Status\Mail as Status;
 use function Amp\call;
 
-final class Mail implements Processor
+final class MailPipelining implements Processor
 {
     /** @var Factory */
     private $replyFactory;
@@ -52,15 +50,13 @@ final class Mail implements Processor
 
     public function process(Buffer $buffer): Promise
     {
-        if ($this->extensions->isExtensionEnabled(Pipelining::class)) {
+        if (!$this->extensions->isExtensionEnabled(Pipelining::class)) {
             return new Success();
         }
 
         return call(function () use ($buffer) {
             $processors = [
-                new ProcessMailFrom($this->replyFactory, $this->logger, $this->connection, $this->envelop->getMailFromAddress()),
-                new ProcessRecipients($this->replyFactory, $this->logger, $this->connection, ...$this->envelop->getRecipients()),
-                new ProcessData($this->replyFactory, $this->logger, $this->connection),
+                new ProcessPipelining($this->replyFactory, $this->logger, $this->connection, $this->envelop->getMailFromAddress(), ...$this->envelop->getRecipients()),
                 new ProcessHeaders($this->connection, ...array_values($this->envelop->getHeaders())),
                 new ProcessContent($this->replyFactory, $this->logger, $this->connection, $this->envelop->getBody()),
             ];
