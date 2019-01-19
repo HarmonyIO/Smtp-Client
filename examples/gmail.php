@@ -18,6 +18,7 @@ use HarmonyIO\SmtpClient\Transaction\Processor\ExtensionNegotiation;
 use HarmonyIO\SmtpClient\Transaction\Processor\Handshake;
 use HarmonyIO\SmtpClient\Transaction\Processor\LogIn;
 use HarmonyIO\SmtpClient\Transaction\Processor\Mail;
+use HarmonyIO\SmtpClient\Transaction\Processor\MailPipeining;
 use HarmonyIO\SmtpClient\Transaction\Reply\Factory as ReplyFactory;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -53,6 +54,7 @@ Loop::run(static function () {
         new Handshake($replyFactory, $logger),
         new ExtensionNegotiation($replyFactory, $logger, $connection, $clientAddress, $extensions),
         new LogIn($replyFactory, $logger, $connection, $extensions, $authentication),
-        new Mail($replyFactory, $logger, $connection, $envelop),
+        new Mail($replyFactory, $logger, $connection, $envelop, $extensions),
+        new MailPipeining($replyFactory, $logger, $connection, $envelop, $extensions),
     );
 });

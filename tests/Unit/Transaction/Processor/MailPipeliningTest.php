@@ -16,7 +16,7 @@ use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\Transaction\Extension\Builder;
 use HarmonyIO\SmtpClient\Transaction\Extension\Collection;
 use HarmonyIO\SmtpClient\Transaction\Extension\Pipelining;
-use HarmonyIO\SmtpClient\Transaction\Processor\Mail;
+use HarmonyIO\SmtpClient\Transaction\Processor\MailPipeining;
 use HarmonyIO\SmtpClient\Transaction\Reply\Factory;
 use HarmonyIO\SmtpClient\Transaction\Reply\Reply;
 use Monolog\Handler\AbstractProcessingHandler;
@@ -24,7 +24,7 @@ use Monolog\Logger as MonoLogger;
 use PHPUnit\Framework\MockObject\MockObject;
 use function Amp\Promise\wait;
 
-class MailTest extends TestCase
+class MailPipeliningTest extends TestCase
 {
     /** @var Logger */
     private $logger;
@@ -35,7 +35,7 @@ class MailTest extends TestCase
     /** @var SmtpSocket|MockObject $smtpSocket */
     private $smtpSocket;
 
-    /** @var Mail */
+    /** @var MailPipeining */
     private $processor;
 
     // phpcs:ignore SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
@@ -59,7 +59,7 @@ class MailTest extends TestCase
             ->body('Example body')
         ;
 
-        $this->processor = new Mail(
+        $this->processor = new MailPipeining(
             new Factory(),
             $this->logger,
             new Socket($this->logger, $this->socket),
@@ -68,53 +68,16 @@ class MailTest extends TestCase
         );
     }
 
-    public function testProcessBailsOutWhenPipeLiningExtensionIsEnabled(): void
+    public function testProcessBailsOutWhenPipeLiningExtensionIsNotEnabled(): void
     {
         $this->socket
             ->expects($this->never())
             ->method('write')
         ;
 
-        $envelop = (new Envelop(
-            new Localhost(),
-            new Envelop\Address('sender@example.com'),
-            new Address('receiver@example.com')
-        ))
-            ->addHeader(new Header('Foo', 'Bar'))
-            ->body('Example body')
-        ;
-
-        /** @var Builder|MockObject $extensionFactory */
-        $extensionFactory = $this->createMock(Builder::class);
-
-        $extensionFactory
-            ->method('build')
-            ->willReturn(new Pipelining())
-        ;
-
-        /** @var Reply|MockObject $reply */
-        $reply = $this->createMock(Reply::class);
-
-        $reply
-            ->method('getText')
-            ->willReturn('PIPELINING')
-        ;
-
-        $collection = new Collection($extensionFactory);
-
-        $collection->enable($reply);
-
-        $processor = new Mail(
-            new Factory(),
-            $this->logger,
-            new Socket($this->logger, $this->socket),
-            $envelop,
-            $collection
-        );
-
         $buffer = new Buffer($this->smtpSocket, $this->logger);
 
-        wait($processor->process($buffer));
+        wait($this->processor->process($buffer));
     }
 
     public function testProcessProcessesEntireContent(): void
@@ -250,8 +213,45 @@ class MailTest extends TestCase
             )
         ;
 
+        $envelop = (new Envelop(
+            new Localhost(),
+            new Envelop\Address('sender@example.com'),
+            new Address('receiver@example.com')
+        ))
+            ->addHeader(new Header('Foo', 'Bar'))
+            ->body('Example body')
+        ;
+
+        /** @var Builder|MockObject $extensionFactory */
+        $extensionFactory = $this->createMock(Builder::class);
+
+        $extensionFactory
+            ->method('build')
+            ->willReturn(new Pipelining())
+        ;
+
+        /** @var Reply|MockObject $reply */
+        $reply = $this->createMock(Reply::class);
+
+        $reply
+            ->method('getText')
+            ->willReturn('PIPELINING')
+        ;
+
+        $collection = new Collection($extensionFactory);
+
+        $collection->enable($reply);
+
+        $processor = new MailPipeining(
+            new Factory(),
+            $this->logger,
+            new Socket($this->logger, $this->socket),
+            $envelop,
+            $collection
+        );
+
         $buffer = new Buffer($this->smtpSocket, $this->logger);
 
-        wait($this->processor->process($buffer));
+        wait($processor->process($buffer));
     }
 }

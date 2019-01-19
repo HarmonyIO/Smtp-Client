@@ -17,6 +17,9 @@ final class Factory implements Builder
             case 'STARTTLS':
                 return new StartTls();
 
+            case 'PIPELINING':
+                return new Pipelining();
+
             default:
                 return null;
         }
