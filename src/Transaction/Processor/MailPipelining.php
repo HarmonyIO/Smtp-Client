@@ -17,7 +17,7 @@ use HarmonyIO\SmtpClient\Transaction\Reply\Factory;
 use HarmonyIO\SmtpClient\Transaction\Status\Mail as Status;
 use function Amp\call;
 
-final class MailPipeining implements Processor
+final class MailPipelining implements Processor
 {
     /** @var Factory */
     private $replyFactory;

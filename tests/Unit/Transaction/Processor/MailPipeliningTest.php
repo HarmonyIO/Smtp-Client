@@ -16,7 +16,7 @@ use HarmonyIO\SmtpClient\Log\Logger;
 use HarmonyIO\SmtpClient\Transaction\Extension\Builder;
 use HarmonyIO\SmtpClient\Transaction\Extension\Collection;
 use HarmonyIO\SmtpClient\Transaction\Extension\Pipelining;
-use HarmonyIO\SmtpClient\Transaction\Processor\MailPipeining;
+use HarmonyIO\SmtpClient\Transaction\Processor\MailPipelining;
 use HarmonyIO\SmtpClient\Transaction\Reply\Factory;
 use HarmonyIO\SmtpClient\Transaction\Reply\Reply;
 use Monolog\Handler\AbstractProcessingHandler;
@@ -35,7 +35,7 @@ class MailPipeliningTest extends TestCase
     /** @var SmtpSocket|MockObject $smtpSocket */
     private $smtpSocket;
 
-    /** @var MailPipeining */
+    /** @var MailPipelining */
     private $processor;
 
     // phpcs:ignore SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
@@ -59,7 +59,7 @@ class MailPipeliningTest extends TestCase
             ->body('Example body')
         ;
 
-        $this->processor = new MailPipeining(
+        $this->processor = new MailPipelining(
             new Factory(),
             $this->logger,
             new Socket($this->logger, $this->socket),
@@ -242,7 +242,7 @@ class MailPipeliningTest extends TestCase
 
         $collection->enable($reply);
 
-        $processor = new MailPipeining(
+        $processor = new MailPipelining(
             new Factory(),
             $this->logger,
             new Socket($this->logger, $this->socket),
